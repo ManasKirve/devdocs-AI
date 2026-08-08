@@ -8,7 +8,14 @@ from app.ingestion.errors import InvalidRepositoryURLError, RepositoryEmptyError
 from app.ingestion.filters import detect_language, should_index_file
 from app.ingestion.github import GitHubClient, parse_repository_url
 from app.ingestion.store import document_store
+from app.ai.rag.store import vector_store
+from app.services.embedding_service import EmbeddingService
 from app.services.repository_service import RepositoryIngestionService
+
+
+class FakeEmbeddingProvider:
+    async def embed_texts(self, texts):
+        return [[1.0, 2.0, 3.0] for _ in texts]
 
 
 def _run(coro):
@@ -131,9 +138,11 @@ def _tree_handler(requests):
 
 def test_ingest_indexes_supported_files():
     document_store.clear_all()
+    vector_store.clear_all()
     requests = []
     client = GitHubClient(transport=httpx.MockTransport(_tree_handler(requests)))
-    service = RepositoryIngestionService(github=client)
+    embedder = EmbeddingService(provider=FakeEmbeddingProvider())
+    service = RepositoryIngestionService(github=client, embedder=embedder)
 
     result = _run(service.ingest("https://github.com/octocat/Hello-World"))
 
@@ -141,11 +150,18 @@ def test_ingest_indexes_supported_files():
     assert result.files_processed == 2
     assert result.files_skipped == 2
     assert result.chunks_created == 2
+    assert result.embeddings_created == 2
     assert [doc.file_path for doc in result.documents] == ["src/app.py", "README.md"]
     assert result.documents[0].language == "Python"
     assert result.documents[0].content_preview == "print('hello')"
     assert len(document_store.get("octocat/Hello-World")) == 2
     assert len(document_store.get_chunks("octocat/Hello-World")) == 2
+    assert len(document_store.get_embeddings("octocat/Hello-World")) == 2
+    assert vector_store.count() == 2
+    hits = vector_store.search([1.0, 2.0, 3.0], repository="octocat/Hello-World")
+    assert len(hits) == 2
+    assert {hit.file_path for hit in hits} == {"src/app.py", "README.md"}
+    assert all(hit.score == pytest.approx(1.0) for hit in hits)
 
 
 def test_ingest_raises_for_empty_repository():

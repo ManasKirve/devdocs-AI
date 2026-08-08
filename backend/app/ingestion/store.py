@@ -1,3 +1,4 @@
+from app.ai.embeddings.models import EmbeddingResult
 from app.ingestion.chunking.models import Chunk
 from app.ingestion.documents import Document
 
@@ -8,6 +9,7 @@ class InMemoryDocumentStore:
     def __init__(self) -> None:
         self._documents: dict[str, list[Document]] = {}
         self._chunks: dict[str, list[Chunk]] = {}
+        self._embeddings: dict[str, list[EmbeddingResult]] = {}
 
     def save(self, repository: str, documents: list[Document]) -> None:
         self._documents[repository] = documents
@@ -21,13 +23,21 @@ class InMemoryDocumentStore:
     def get_chunks(self, repository: str) -> list[Chunk]:
         return self._chunks.get(repository, [])
 
+    def save_embeddings(self, repository: str, embeddings: list[EmbeddingResult]) -> None:
+        self._embeddings[repository] = embeddings
+
+    def get_embeddings(self, repository: str) -> list[EmbeddingResult]:
+        return self._embeddings.get(repository, [])
+
     def clear(self, repository: str) -> None:
         self._documents.pop(repository, None)
         self._chunks.pop(repository, None)
+        self._embeddings.pop(repository, None)
 
     def clear_all(self) -> None:
         self._documents.clear()
         self._chunks.clear()
+        self._embeddings.clear()
 
 
 document_store = InMemoryDocumentStore()

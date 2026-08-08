@@ -16,6 +16,7 @@ class Settings(BaseSettings):
 
     xai_api_key: str = ""
     xai_model: str = "grok-4.5"
+    xai_embedding_model: str = "text-embedding-3-large"
     xai_base_url: str = "https://api.x.ai/v1"
     xai_timeout_seconds: float = 60.0
     github_token: str = ""
