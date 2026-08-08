@@ -20,3 +20,15 @@ class DimensionMismatchError(SearchError):
 
 class EmptyVectorError(SearchError):
     """An embedding vector is empty and cannot be compared."""
+
+
+class RAGError(Exception):
+    """Base class for all RAG errors."""
+
+
+class RAGContextError(RAGError):
+    """Context retrieval failed or returned no usable snippets."""
+
+
+class RAGEmptyContextError(RAGContextError):
+    """Retrieval returned no snippets, so generation was skipped."""

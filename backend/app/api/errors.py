@@ -24,6 +24,8 @@ from app.ai.rag.errors import (
     DimensionMismatchError,
     EmptyVectorError,
     InvalidTopKError,
+    RAGEmptyContextError,
+    RAGError,
     SearchError,
     SearchQueryError,
     SearchRepositoryNotFoundError,
@@ -95,6 +97,13 @@ _SEARCH_ERROR_RESPONSES = {
     EmptyVectorError: (500, "An embedding vector was empty."),
 }
 
+_RAG_ERROR_RESPONSES = {
+    RAGEmptyContextError: (
+        404,
+        "No relevant code snippets were found for your query.",
+    ),
+}
+
 _INGESTION_ERROR_RESPONSES = {
     InvalidRepositoryURLError: (400, "Invalid GitHub repository URL."),
     RepositoryNotFoundError: (
@@ -149,6 +158,14 @@ def _search_error_handler(status_code: int, message: str):
     return handler
 
 
+def _rag_error_handler(status_code: int, message: str):
+    def handler(request: Request, exc: RAGError) -> JSONResponse:
+        logger.error("RAG error: %s", exc)
+        return JSONResponse(status_code=status_code, content={"detail": message})
+
+    return handler
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     for exc_type, (status_code, message) in _ERROR_RESPONSES.items():
         app.add_exception_handler(exc_type, _error_handler(status_code, message))
@@ -159,6 +176,10 @@ def register_exception_handlers(app: FastAPI) -> None:
     for exc_type, (status_code, message) in _SEARCH_ERROR_RESPONSES.items():
         app.add_exception_handler(
             exc_type, _search_error_handler(status_code, message)
+        )
+    for exc_type, (status_code, message) in _RAG_ERROR_RESPONSES.items():
+        app.add_exception_handler(
+            exc_type, _rag_error_handler(status_code, message)
         )
     for exc_type, (status_code, message) in _INGESTION_ERROR_RESPONSES.items():
         app.add_exception_handler(
