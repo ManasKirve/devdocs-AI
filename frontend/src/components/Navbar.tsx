@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import BackendStatus from './BackendStatus'
 import Container from './Container'
 import Logo from './Logo'
 import { GitHubIcon } from './icons'
@@ -40,6 +41,8 @@ export default function Navbar() {
               </a>
             </li>
           </ul>
+
+          <BackendStatus />
 
           <a
             className="btn btn-ghost btn-sm navbar-github navbar-github-desktop"

@@ -1,6 +1,9 @@
+import json
 from functools import lru_cache
+from typing import Annotated
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -12,8 +15,22 @@ class Settings(BaseSettings):
     xai_model: str = "grok-4.5"
     xai_base_url: str = "https://api.x.ai/v1"
     xai_timeout_seconds: float = 60.0
-    cors_origins: list[str] = ["http://localhost:5173"]
+    cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
     api_v1_prefix: str = "/api/v1"
+    api_version: str = "0.1.0"
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def _parse_cors_origins(cls, value: object) -> object:
+        if isinstance(value, str):
+            value = value.strip()
+            if value.startswith("["):
+                try:
+                    return json.loads(value)
+                except json.JSONDecodeError:
+                    return []
+            return [origin.strip() for origin in value.split(",") if origin.strip()]
+        return value
 
 
 @lru_cache
