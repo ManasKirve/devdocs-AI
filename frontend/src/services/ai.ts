@@ -3,7 +3,7 @@ import type { GenerateRequest, GenerateResponse } from '../types/ai'
 
 export async function generateResponse(prompt: string): Promise<GenerateResponse> {
   const request: GenerateRequest = { prompt }
-  const response = await fetch(`${API_BASE_URL}/ai/generate`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/ai/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
