@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { BackendState } from '../hooks/useHealth'
 import type { HealthResponse } from '../types/health'
 import BackendStatus from './BackendStatus'
@@ -13,6 +13,8 @@ const NAV_LINKS = [
   { label: 'Q&A', href: '#qa' },
 ]
 
+const SCROLL_EDGE_PX = 8
+
 interface NavbarProps {
   repository?: string | null
   backendState?: BackendState
@@ -21,13 +23,21 @@ interface NavbarProps {
 
 export default function Navbar({ repository = null, backendState, health }: NavbarProps) {
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > SCROLL_EDGE_PX)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   function closeMenu() {
     setOpen(false)
   }
 
   return (
-    <header className="navbar">
+    <header className={`navbar${scrolled ? ' is-scrolled' : ''}`}>
       <Container>
         <nav className="navbar-inner" aria-label="Main navigation">
           <a className="navbar-brand" href="#top" aria-label="DevDocs AI home">

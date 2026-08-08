@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import CodeBlock from './CodeBlock'
 import Container from './Container'
+import FadeContent from './bits/FadeContent'
 import { AlertIcon, ArrowRightIcon, FileIcon, RefreshIcon, SearchIcon } from './icons'
 import { getFriendlyError } from '../services/http'
 import { searchCodebase } from '../services/search'
@@ -125,16 +126,19 @@ export default function SearchSection({ repository }: SearchSectionProps) {
   return (
     <section className="section search" id="search">
       <Container>
-        <div className="section-heading">
-          <p className="eyebrow">Code search</p>
-          <h2 className="section-title">Find code by intent</h2>
-          <p className="section-subtitle">
-            Describe what you are looking for. DevDocs AI matches semantically across
-            your indexed repository and points you at the exact files and lines.
-          </p>
-        </div>
+        <FadeContent duration={700} threshold={0.1}>
+          <div className="section-heading">
+            <p className="eyebrow">Code search</p>
+            <h2 className="section-title">Find code by intent</h2>
+            <p className="section-subtitle">
+              Describe what you are looking for. DevDocs AI matches semantically across
+              your indexed repository and points you at the exact files and lines.
+            </p>
+          </div>
+        </FadeContent>
 
-        <div className="search-panel">
+        <FadeContent duration={800} delay={100} threshold={0.1}>
+          <div className="search-panel">
           <form className="search-form" onSubmit={handleSubmit}>
             <div className="search-input-wrap">
               <SearchIcon size={17} className="search-input-icon" />
@@ -276,6 +280,7 @@ export default function SearchSection({ repository }: SearchSectionProps) {
             </div>
           )}
         </div>
+        </FadeContent>
       </Container>
     </section>
   )

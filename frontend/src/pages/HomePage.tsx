@@ -52,7 +52,7 @@ export default function HomePage() {
         <SearchSection repository={analyzedRepository} />
         <CodebaseQA repository={analyzedRepository} />
       </main>
-      <Footer />
+      <Footer backendState={state} health={health} />
     </>
   )
 }

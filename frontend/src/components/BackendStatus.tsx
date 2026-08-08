@@ -8,9 +8,9 @@ interface BackendStatusProps {
 }
 
 export default function BackendStatus({ compact = false, state, health }: BackendStatusProps) {
-  const internal = useHealth()
-  const current: BackendState = state ?? internal.state
-  const currentHealth = health ?? internal.health
+  const internal = state === undefined ? useHealth() : null
+  const current: BackendState = state ?? internal?.state ?? 'loading'
+  const currentHealth = health ?? internal?.health ?? null
 
   if (current === 'loading') {
     return (

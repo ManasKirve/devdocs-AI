@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import Container from './Container'
+import SplitText from './bits/SplitText'
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import {
   ArrowRightIcon,
   ChevronRightIcon,
-  CodeIcon,
   FileIcon,
   GitHubIcon,
 } from './icons'
@@ -11,6 +12,8 @@ import {
 interface HeroProps {
   onAnalyzeRequest: (url: string) => void
 }
+
+const HERO_TITLE = 'Understand any codebase — with sources.'
 
 const VALUE_STEPS = [
   { label: 'Connect', description: 'Paste a public GitHub repo' },
@@ -34,6 +37,7 @@ const MOCK_CODE = [
 
 export default function Hero({ onAnalyzeRequest }: HeroProps) {
   const [url, setUrl] = useState('')
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -41,6 +45,23 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
     if (!target) return
     onAnalyzeRequest(target)
   }
+
+  const title = prefersReducedMotion ? (
+    <h1 className="hero-title">
+      Understand any codebase — with <span className="hero-title-mono">sources</span>
+    </h1>
+  ) : (
+    <SplitText
+      text={HERO_TITLE}
+      className="hero-title"
+      tag="h1"
+      splitType="words"
+      delay={55}
+      duration={0.9}
+      from={{ opacity: 0, y: 16 }}
+      to={{ opacity: 1, y: 0 }}
+    />
+  )
 
   return (
     <section className="hero" id="top">
@@ -51,9 +72,7 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
             <span className="hero-eyebrow-dot" aria-hidden="true" />
             AI-powered codebase intelligence
           </span>
-          <h1 className="hero-title">
-            Understand any codebase — with <span className="hero-title-mono">sources</span>
-          </h1>
+          {title}
           <p className="hero-subtitle">
             Connect a GitHub repository and turn it into searchable, queryable
             documentation. Answers grounded in your actual code — not a summary of it.
@@ -86,10 +105,6 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
             <span className="hero-hint-item">
               <GitHubIcon size={13} />
               Public repositories only
-            </span>
-            <span className="hero-hint-item">
-              <CodeIcon size={13} />
-              <code>connect → index → search → ask</code>
             </span>
           </div>
 

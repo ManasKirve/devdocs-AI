@@ -1,6 +1,8 @@
 import BackendStatus from './BackendStatus'
 import Container from './Container'
 import Logo from './Logo'
+import type { BackendState } from '../hooks/useHealth'
+import type { HealthResponse } from '../types/health'
 import { GitHubIcon } from './icons'
 
 const FOOTER_LINKS = [
@@ -10,7 +12,12 @@ const FOOTER_LINKS = [
   { label: 'Q&A', href: '#qa' },
 ]
 
-export default function Footer() {
+interface FooterProps {
+  backendState?: BackendState
+  health?: HealthResponse | null
+}
+
+export default function Footer({ backendState, health }: FooterProps) {
   return (
     <footer className="footer">
       <Container>
@@ -43,7 +50,7 @@ export default function Footer() {
         </div>
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} DevDocs AI. Built for developers.</p>
-          <BackendStatus compact />
+          <BackendStatus compact state={backendState} health={health} />
         </div>
       </Container>
     </footer>

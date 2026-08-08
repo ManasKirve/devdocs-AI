@@ -13,7 +13,6 @@
   --bg-surface: #14161c;
   --bg-inset: #0c0e12;
   --bg-hover: #191c23;
-  --bg-active: #1e222b;
 
   /* Borders */
   --border: rgba(255, 255, 255, 0.07);
@@ -35,7 +34,6 @@
   --accent-text: #9dc1ff;
   --accent-soft: rgba(76, 142, 255, 0.1);
   --accent-border: rgba(76, 142, 255, 0.3);
-  --accent-underline: rgba(76, 142, 255, 0.45);
 
   /* Semantic */
   --green: #37b079;
@@ -46,10 +44,7 @@
   --red-border: rgba(242, 100, 90, 0.3);
 
   /* Shadows — floating surfaces only */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.28);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.35);
-  --shadow-pop: 0 20px 60px rgba(0, 0, 0, 0.45);
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
 
   /* Radii */
@@ -67,21 +62,12 @@
     'JetBrains Mono', 'SFMono-Regular', 'Cascadia Code', Consolas, monospace;
 
   /* Spacing scale (4px base) */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
   --space-4: 16px;
-  --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-  --space-20: 80px;
 
   /* Layout */
   --max-width: 1200px;
-  --max-width-wide: 1400px;
   --nav-height: 60px;
 
   /* Motion */
@@ -205,10 +191,6 @@ code {
   padding: 0 var(--space-8);
 }
 
-.container-wide {
-  max-width: var(--max-width-wide);
-}
-
 .section {
   position: relative;
   padding: 96px 0;
@@ -292,7 +274,7 @@ code {
   border: 1px solid transparent;
   font-family: inherit;
   font-size: 13px;
-  font-weight: 550;
+  font-weight: 600;
   letter-spacing: 0.005em;
   line-height: 1;
   white-space: nowrap;
@@ -378,12 +360,8 @@ code {
   display: block;
   margin-bottom: 8px;
   font-size: 13px;
-  font-weight: 550;
+  font-weight: 600;
   color: var(--text-muted);
-}
-
-.input-wrap {
-  position: relative;
 }
 
 .input-icon {
@@ -422,26 +400,6 @@ code {
   padding-left: 40px;
 }
 
-.input.is-invalid {
-  border-color: var(--red);
-}
-
-.input.is-invalid:focus {
-  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--red);
-}
-
-textarea.input {
-  height: auto;
-  min-height: 92px;
-  padding: 12px 14px;
-  line-height: 1.6;
-  resize: vertical;
-}
-
-textarea.input:disabled {
-  opacity: 0.55;
-}
-
 .input-hint {
   display: flex;
   align-items: center;
@@ -474,6 +432,14 @@ textarea.input:disabled {
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-faint);
+  transition:
+    background-color var(--duration-base) var(--ease-default),
+    border-color var(--duration-base) var(--ease-default);
+}
+
+.navbar.is-scrolled {
+  background: rgba(15, 17, 22, 0.96);
+  border-bottom-color: var(--border);
 }
 
 .navbar-inner {
@@ -623,7 +589,7 @@ textarea.input:disabled {
   border-radius: var(--radius-full);
   background: var(--bg-inset);
   font-size: 12px;
-  font-weight: 550;
+  font-weight: 600;
   color: var(--text-secondary);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -693,11 +659,10 @@ textarea.input:disabled {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(720px 320px at 50% -160px, rgba(255, 255, 255, 0.03), transparent 70%),
+  background-image:
     linear-gradient(var(--border-faint) 1px, transparent 1px),
     linear-gradient(90deg, var(--border-faint) 1px, transparent 1px);
-  background-size: 100% 100%, 46px 46px, 46px 46px;
+  background-size: 46px 46px;
   -webkit-mask-image: radial-gradient(75% 90% at 50% 0%, #000 30%, transparent 100%);
   mask-image: radial-gradient(75% 90% at 50% 0%, #000 30%, transparent 100%);
 }
@@ -735,7 +700,26 @@ textarea.input:disabled {
   line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--text-primary);
-  animation: rise var(--duration-entrance) var(--ease-out) both;
+}
+
+/* SplitText animates the headline on first paint (word-by-word rise). */
+.hero-title.split-parent {
+  overflow: hidden;
+}
+
+.hero-title .split-word,
+.hero-title .split-line .split-word {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* mono substitution on the closing word — the premium "this is code" move */
+.hero-title > .split-word:last-child,
+.hero-title > .split-line:last-child > .split-word:last-child {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  font-weight: 500;
+  color: var(--accent-text);
 }
 
 .hero-title-mono {
@@ -801,11 +785,6 @@ textarea.input:disabled {
 
 .hero-hint-item svg {
   color: var(--text-faint);
-}
-
-.hero-hint-item code {
-  font-size: 12px;
-  color: var(--text-secondary);
 }
 
 /* value props */
@@ -1038,7 +1017,16 @@ textarea.input:disabled {
   gap: 20px;
 }
 
+.features-grid > div {
+  display: flex;
+}
+
+.features-grid > div > .feature-card {
+  flex: 1;
+}
+
 .feature-card {
+  height: 100%;
   padding: 24px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
@@ -1229,7 +1217,7 @@ textarea.input:disabled {
 
 .analyzer-error-title {
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--red);
 }
 
@@ -1365,7 +1353,7 @@ textarea.input:disabled {
 
 .result-status-label {
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--green);
 }
@@ -1561,7 +1549,7 @@ textarea.input:disabled {
   min-width: 0;
   font-family: var(--font-mono);
   font-size: 12.5px;
-  font-weight: 550;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -1571,6 +1559,10 @@ textarea.input:disabled {
 }
 
 .search-result-path-dir {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--text-muted);
 }
 
@@ -1644,7 +1636,7 @@ textarea.input:disabled {
 
 .state-title {
   font-size: 15.5px;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
@@ -1806,7 +1798,7 @@ textarea.input:disabled {
 }
 
 .qa-toolbar-text {
-  font-weight: 550;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -1819,7 +1811,7 @@ textarea.input:disabled {
   border-radius: var(--radius-full);
   background: var(--accent-soft);
   font-size: 12px;
-  font-weight: 550;
+  font-weight: 600;
   color: var(--accent-text);
   white-space: nowrap;
 }
@@ -2000,7 +1992,7 @@ textarea.input:disabled {
 
 .answer-name {
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
@@ -2038,7 +2030,7 @@ textarea.input:disabled {
 
 .answer-markdown strong {
   color: var(--text-primary);
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .answer-markdown h1,
@@ -2188,7 +2180,7 @@ textarea.input:disabled {
   border-radius: var(--radius-sm);
   background: transparent;
   font-size: 12px;
-  font-weight: 550;
+  font-weight: 600;
   color: var(--text-muted);
   transition:
     color var(--duration-fast) var(--ease-default),
@@ -2295,7 +2287,7 @@ textarea.input:disabled {
 .sources-title {
   margin-bottom: 4px;
   font-size: 11.5px;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -2363,7 +2355,7 @@ textarea.input:disabled {
   min-width: 0;
   font-family: var(--font-mono);
   font-size: 12.5px;
-  font-weight: 550;
+  font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -2413,7 +2405,7 @@ textarea.input:disabled {
   padding: 5px 9px;
   border-radius: var(--radius-sm);
   font-size: 12px;
-  font-weight: 550;
+  font-weight: 600;
   color: var(--accent-text);
   transition: color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
 }

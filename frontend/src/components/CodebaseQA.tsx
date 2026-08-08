@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import AnswerContent from './AnswerContent'
 import Container from './Container'
+import FadeContent from './bits/FadeContent'
 import {
   AlertIcon,
   ArrowRightIcon,
@@ -111,16 +112,19 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
   return (
     <section className="section qa" id="qa">
       <Container>
-        <div className="section-heading">
-          <p className="eyebrow">Codebase Q&amp;A</p>
-          <h2 className="section-title">Ask your codebase anything</h2>
-          <p className="section-subtitle">
-            Answers are generated from your indexed repository and cite the exact file and
-            lines they come from.
-          </p>
-        </div>
+        <FadeContent duration={700} threshold={0.1}>
+          <div className="section-heading">
+            <p className="eyebrow">Codebase Q&amp;A</p>
+            <h2 className="section-title">Ask your codebase anything</h2>
+            <p className="section-subtitle">
+              Answers are generated from your indexed repository and cite the exact file and
+              lines they come from.
+            </p>
+          </div>
+        </FadeContent>
 
-        <div className="qa-panel">
+        <FadeContent duration={800} delay={100} threshold={0.1}>
+          <div className="qa-panel">
           <div className="qa-toolbar" role="status">
             <span className={`qa-toolbar-dot${repository ? '' : ' idle'}`} aria-hidden="true" />
             {repository ? (
@@ -282,6 +286,7 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
             </>
           )}
         </div>
+        </FadeContent>
       </Container>
     </section>
   )

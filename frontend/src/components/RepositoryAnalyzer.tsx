@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import Container from './Container'
+import FadeContent from './bits/FadeContent'
 import {
   AlertIcon,
   ArrowRightIcon,
@@ -151,26 +152,29 @@ export default function RepositoryAnalyzer({
     <section className="section analyzer" id="analyze">
       <Container>
         <div className="analyzer-grid">
-          <div className="analyzer-copy">
-            <p className="eyebrow">Get started</p>
-            <h2 className="section-title">Analyze a repository</h2>
-            <p className="section-subtitle">
-              Paste a public GitHub repository URL. DevDocs AI fetches, chunks, and
-              embeds your code, then exposes it to semantic search and grounded Q&amp;A.
-            </p>
-            <div className="analyzer-actions">
-              <a className="btn btn-ghost" href="#search">
-                <ArrowRightIcon size={14} />
-                Try code search
-              </a>
-              <a className="btn btn-ghost" href="#qa">
-                <MessagesIcon size={14} />
-                Ask a question
-              </a>
+          <FadeContent duration={700} threshold={0.15}>
+            <div className="analyzer-copy">
+              <p className="eyebrow">Get started</p>
+              <h2 className="section-title">Analyze a repository</h2>
+              <p className="section-subtitle">
+                Paste a public GitHub repository URL. DevDocs AI fetches, chunks, and
+                embeds your code, then exposes it to semantic search and grounded Q&amp;A.
+              </p>
+              <div className="analyzer-actions">
+                <a className="btn btn-ghost" href="#search">
+                  <ArrowRightIcon size={14} />
+                  Try code search
+                </a>
+                <a className="btn btn-ghost" href="#qa">
+                  <MessagesIcon size={14} />
+                  Ask a question
+                </a>
+              </div>
             </div>
-          </div>
+          </FadeContent>
 
-          <form className="analyzer-form" onSubmit={handleSubmit}>
+          <FadeContent duration={700} delay={120} threshold={0.15}>
+            <form className="analyzer-form" onSubmit={handleSubmit}>
             <label className="field-label" htmlFor="repository-url">
               GitHub repository URL
             </label>
@@ -342,6 +346,7 @@ export default function RepositoryAnalyzer({
               </div>
             )}
           </form>
+          </FadeContent>
         </div>
       </Container>
     </section>
