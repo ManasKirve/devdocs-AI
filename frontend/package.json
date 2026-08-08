@@ -1,0 +1,7 @@
+{
+  "name": "devdocs-ai-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "DevDocs AI frontend (React + TypeScript + Vite) - placeholder, regenerate via the Vite scaffolder"
+}
