@@ -140,10 +140,12 @@ def test_ingest_indexes_supported_files():
     assert result.repository == "octocat/Hello-World"
     assert result.files_processed == 2
     assert result.files_skipped == 2
+    assert result.chunks_created == 2
     assert [doc.file_path for doc in result.documents] == ["src/app.py", "README.md"]
     assert result.documents[0].language == "Python"
     assert result.documents[0].content_preview == "print('hello')"
     assert len(document_store.get("octocat/Hello-World")) == 2
+    assert len(document_store.get_chunks("octocat/Hello-World")) == 2
 
 
 def test_ingest_raises_for_empty_repository():

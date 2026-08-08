@@ -1,4 +1,5 @@
 from app.core.config import get_settings
+from app.ingestion.chunking.service import ChunkingService
 from app.ingestion.github import GitHubClient
 from app.services.repository_service import RepositoryIngestionService
 
@@ -10,4 +11,4 @@ def get_repository_service() -> RepositoryIngestionService:
         base_url=settings.github_api_url,
         timeout_seconds=settings.github_timeout_seconds,
     )
-    return RepositoryIngestionService(github=client)
+    return RepositoryIngestionService(github=client, chunker=ChunkingService())

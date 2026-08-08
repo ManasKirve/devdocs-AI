@@ -25,4 +25,5 @@ class IngestResponse(BaseModel):
     repository: str
     files_processed: int
     files_skipped: int
+    chunks_created: int = 0
     documents: list[DocumentResponse] = Field(default_factory=list)

@@ -21,6 +21,7 @@ def _sample_response() -> IngestResponse:
         repository="octocat/Hello-World",
         files_processed=1,
         files_skipped=2,
+        chunks_created=3,
         documents=[
             DocumentResponse(
                 repository="octocat/Hello-World",
@@ -72,6 +73,7 @@ def test_ingest_endpoint_returns_response():
     assert body["repository"] == "octocat/Hello-World"
     assert body["files_processed"] == 1
     assert body["files_skipped"] == 2
+    assert body["chunks_created"] == 3
     assert len(body["documents"]) == 1
     assert body["documents"][0]["file_path"] == "src/main.py"
     assert fake.last_url == "https://github.com/octocat/Hello-World"

@@ -1,5 +1,7 @@
 import logging
 
+from app.ingestion.chunking.models import Chunk
+from app.ingestion.chunking.service import ChunkingService
 from app.ingestion.documents import Document, content_preview, create_document
 from app.ingestion.errors import (
     GitHubAPIError,
@@ -17,16 +19,18 @@ logger = logging.getLogger("devdocs_ai")
 
 
 class RepositoryIngestionService:
-    """Orchestrates GitHub fetch -> file filtering -> document creation."""
+    """Orchestrates GitHub fetch -> file filtering -> documents -> chunks."""
 
     def __init__(
         self,
         github: GitHubClient,
         *,
         store: InMemoryDocumentStore | None = None,
+        chunker: ChunkingService | None = None,
     ) -> None:
         self._github = github
         self._store = store if store is not None else document_store
+        self._chunker = chunker if chunker is not None else ChunkingService()
 
     async def ingest(self, repository_url: str) -> IngestResponse:
         owner, repo = parse_repository_url(repository_url)
@@ -79,12 +83,18 @@ class RepositoryIngestionService:
                 "The repository contains no indexable files."
             )
 
+        chunks: list[Chunk] = []
+        for document in documents:
+            chunks.extend(self._chunker.chunk_document(document))
+
         self._store.save(repository, documents)
+        self._store.save_chunks(repository, chunks)
 
         return IngestResponse(
             repository=repository,
             files_processed=files_processed,
             files_skipped=files_skipped,
+            chunks_created=len(chunks),
             documents=[
                 self._to_document_response(document) for document in documents
             ],
