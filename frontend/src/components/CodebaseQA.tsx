@@ -211,16 +211,18 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
               </form>
 
               {isLoading && (
-                <div className="thinking" role="status" aria-live="polite">
-                  <span className="thinking-dots" aria-hidden="true">
-                    <span />
-                    <span />
-                    <span />
-                  </span>
-                  <span className="thinking-text">
-                    Retrieving context from <span className="mono">{repository}</span>…
-                  </span>
-                </div>
+                <FadeContent duration={300} threshold={0} blur>
+                  <div className="thinking" role="status" aria-live="polite">
+                    <span className="thinking-dots" aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                    </span>
+                    <span className="thinking-text">
+                      Retrieving context from <span className="mono">{repository}</span>…
+                    </span>
+                  </div>
+                </FadeContent>
               )}
 
               {status === 'error' && (

@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import Container from './Container'
+import FadeContent from './bits/FadeContent'
+import HeroBackground from './bits/HeroBackground'
 import SplitText from './bits/SplitText'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import {
@@ -56,16 +58,17 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
       className="hero-title"
       tag="h1"
       splitType="words"
-      delay={55}
-      duration={0.9}
-      from={{ opacity: 0, y: 16 }}
-      to={{ opacity: 1, y: 0 }}
+      delay={60}
+      duration={1.1}
+      from={{ opacity: 0, y: 28, filter: 'blur(6px)' }}
+      to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
     />
   )
 
   return (
     <section className="hero" id="top">
       <div className="hero-bg" aria-hidden="true" />
+      <HeroBackground />
       <Container>
         <div className="hero-inner">
           <span className="hero-eyebrow">
@@ -73,10 +76,12 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
             AI-powered codebase intelligence
           </span>
           {title}
-          <p className="hero-subtitle">
-            Connect a GitHub repository and turn it into searchable, queryable
-            documentation. Answers grounded in your actual code — not a summary of it.
-          </p>
+          <FadeContent duration={700} delay={450} threshold={0} blur className="hero-subtitle-wrap">
+            <p className="hero-subtitle">
+              Connect a GitHub repository and turn it into searchable, queryable
+              documentation. Answers grounded in your actual code — not a summary of it.
+            </p>
+          </FadeContent>
 
           <form className="hero-form" onSubmit={handleSubmit}>
             <div className="hero-input-wrap">

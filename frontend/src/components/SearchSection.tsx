@@ -269,11 +269,15 @@ export default function SearchSection({ repository }: SearchSectionProps) {
                     <code>&ldquo;{result.query}&rdquo;</code>
                   </div>
                   {result.results.map((item, index) => (
-                    <ResultRow
+                    <FadeContent
                       key={`${item.file_path}-${item.start_line}-${index}`}
-                      item={item}
-                      terms={terms}
-                    />
+                      duration={450}
+                      delay={Math.min(index, 6) * 70}
+                      threshold={0}
+                      blur
+                    >
+                      <ResultRow item={item} terms={terms} />
+                    </FadeContent>
                   ))}
                 </>
               )}

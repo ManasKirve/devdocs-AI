@@ -243,7 +243,17 @@ export default function RepositoryAnalyzer({
             </p>
 
             {isAnalyzing && (
-              <div className="progress" role="status" aria-live="polite">
+              <div className="analyzer-track" aria-hidden="true">
+                <span
+                  className="analyzer-track-bar"
+                  style={{ width: `${((activeStep + 1) / STEPS.length) * 100}%` }}
+                />
+              </div>
+            )}
+
+            {isAnalyzing && (
+              <FadeContent duration={450} blur threshold={0}>
+                <div className="progress" role="status" aria-live="polite">
                 {STEPS.map((step, index) => {
                   const stepState =
                     index < activeStep ? 'done' : index === activeStep ? 'active' : 'pending'
@@ -269,7 +279,8 @@ export default function RepositoryAnalyzer({
                     </div>
                   )
                 })}
-              </div>
+                </div>
+              </FadeContent>
             )}
 
             {status === 'error' && (
@@ -295,7 +306,8 @@ export default function RepositoryAnalyzer({
             )}
 
             {status === 'completed' && result && (
-              <div className="result-card" role="status">
+              <FadeContent duration={550} blur threshold={0}>
+                <div className="result-card" role="status">
                 <div className="result-identity">
                   <span className="result-status-dot" aria-hidden="true" />
                   <span className="result-status-label">Indexed</span>
@@ -343,7 +355,8 @@ export default function RepositoryAnalyzer({
                     Analyze another
                   </button>
                 </div>
-              </div>
+                </div>
+              </FadeContent>
             )}
           </form>
           </FadeContent>
