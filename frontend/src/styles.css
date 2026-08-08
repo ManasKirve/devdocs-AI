@@ -544,6 +544,56 @@ ul {
   text-align: center;
 }
 
+.repository-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.repository-error {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  font-size: 13.5px;
+  text-align: center;
+}
+
+.repository-result {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.repository-result-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.repository-result-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.repository-result-value {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  color: var(--text-primary);
+  text-align: right;
+  word-break: break-all;
+}
+
 /* ---- Features ---- */
 
 .features-grid {

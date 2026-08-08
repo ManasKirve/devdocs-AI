@@ -11,6 +11,15 @@ from app.ai.llm.errors import (
     LLMProviderResponseError,
     LLMProviderTimeoutError,
 )
+from app.ingestion.errors import (
+    GitHubAPIError,
+    GitHubNetworkError,
+    GitHubRateLimitError,
+    InvalidRepositoryURLError,
+    RepositoryEmptyError,
+    RepositoryIngestionError,
+    RepositoryNotFoundError,
+)
 
 logger = logging.getLogger("devdocs_ai")
 
@@ -34,6 +43,27 @@ _ERROR_RESPONSES = {
     ),
 }
 
+_INGESTION_ERROR_RESPONSES = {
+    InvalidRepositoryURLError: (400, "Invalid GitHub repository URL."),
+    RepositoryNotFoundError: (
+        404,
+        "The repository was not found or is not accessible.",
+    ),
+    RepositoryEmptyError: (
+        422,
+        "The repository contains no indexable files.",
+    ),
+    GitHubRateLimitError: (
+        429,
+        "The GitHub API rate limit was exceeded. Please try again later.",
+    ),
+    GitHubAPIError: (502, "The GitHub API request failed."),
+    GitHubNetworkError: (
+        502,
+        "Could not reach the GitHub API. Please try again.",
+    ),
+}
+
 
 def _error_handler(status_code: int, message: str):
     def handler(request: Request, exc: LLMProviderError) -> JSONResponse:
@@ -43,6 +73,18 @@ def _error_handler(status_code: int, message: str):
     return handler
 
 
+def _ingestion_error_handler(status_code: int, message: str):
+    def handler(request: Request, exc: RepositoryIngestionError) -> JSONResponse:
+        logger.error("Repository ingestion error: %s", exc)
+        return JSONResponse(status_code=status_code, content={"detail": message})
+
+    return handler
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     for exc_type, (status_code, message) in _ERROR_RESPONSES.items():
         app.add_exception_handler(exc_type, _error_handler(status_code, message))
+    for exc_type, (status_code, message) in _INGESTION_ERROR_RESPONSES.items():
+        app.add_exception_handler(
+            exc_type, _ingestion_error_handler(status_code, message)
+        )

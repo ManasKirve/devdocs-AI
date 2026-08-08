@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     xai_model: str = "grok-4.5"
     xai_base_url: str = "https://api.x.ai/v1"
     xai_timeout_seconds: float = 60.0
+    github_token: str = ""
+    github_api_url: str = "https://api.github.com"
+    github_timeout_seconds: float = 20.0
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
     api_v1_prefix: str = "/api/v1"
     api_version: str = "0.1.0"

@@ -1,18 +1,46 @@
 import { useState, type FormEvent } from 'react'
 import Container from './Container'
 import { ArrowRightIcon, GitHubIcon } from './icons'
+import { ingestRepository } from '../services/repositories'
+import type { IngestResponse } from '../types/repositories'
 
 const PLACEHOLDER_URL = 'https://github.com/owner/repository'
 
+type Status = 'idle' | 'loading' | 'success' | 'error'
+
 export default function RepositoryAnalyzer() {
   const [url, setUrl] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState<Status>('idle')
+  const [error, setError] = useState('')
+  const [result, setResult] = useState<IngestResponse | null>(null)
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!url.trim()) return
-    setSubmitted(true)
+    const target = url.trim()
+    if (!target) return
+
+    setStatus('loading')
+    setError('')
+    setResult(null)
+
+    try {
+      const data = await ingestRepository(target)
+      setResult(data)
+      setStatus('success')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to analyze repository')
+      setStatus('error')
+    }
   }
+
+  function handleInputChange(value: string) {
+    setUrl(value)
+    setStatus('idle')
+    setError('')
+    setResult(null)
+  }
+
+  const isLoading = status === 'loading'
 
   return (
     <section className="section repository" id="repository">
@@ -36,24 +64,47 @@ export default function RepositoryAnalyzer() {
                 placeholder={PLACEHOLDER_URL}
                 aria-label="GitHub repository URL"
                 value={url}
-                onChange={(event) => {
-                  setUrl(event.target.value)
-                  setSubmitted(false)
-                }}
+                onChange={(event) => handleInputChange(event.target.value)}
               />
             </div>
-            <button type="submit" className="btn btn-primary repository-submit">
-              Analyze Repository
-              <ArrowRightIcon size={16} />
+            <button
+              type="submit"
+              className="btn btn-primary repository-submit"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Analyzing…' : 'Analyze Repository'}
+              {!isLoading && <ArrowRightIcon size={16} />}
             </button>
-          </form>
 
-          {submitted && (
-            <p className="repository-note" role="status">
-              Repository analysis is UI-only for now — API integration ships in an upcoming
-              milestone.
-            </p>
-          )}
+            {status === 'loading' && (
+              <p className="repository-note" role="status">
+                Fetching repository files from GitHub…
+              </p>
+            )}
+
+            {status === 'error' && (
+              <p className="repository-error" role="alert">
+                {error}
+              </p>
+            )}
+
+            {status === 'success' && result && (
+              <div className="repository-result" role="status">
+                <div className="repository-result-row">
+                  <span className="repository-result-label">Repository</span>
+                  <span className="repository-result-value">{result.repository}</span>
+                </div>
+                <div className="repository-result-row">
+                  <span className="repository-result-label">Files processed</span>
+                  <span className="repository-result-value">{result.files_processed}</span>
+                </div>
+                <div className="repository-result-row">
+                  <span className="repository-result-label">Files skipped</span>
+                  <span className="repository-result-value">{result.files_skipped}</span>
+                </div>
+              </div>
+            )}
+          </form>
         </div>
       </Container>
     </section>
