@@ -1,47 +1,152 @@
+import { useState, type FormEvent } from 'react'
 import Container from './Container'
-import { ArrowRightIcon } from './icons'
+import {
+  ArrowRightIcon,
+  ChevronRightIcon,
+  CodeIcon,
+  FileIcon,
+  GitHubIcon,
+} from './icons'
 
-export default function Hero() {
+interface HeroProps {
+  onAnalyzeRequest: (url: string) => void
+}
+
+const VALUE_STEPS = [
+  { label: 'Connect', description: 'Paste a public GitHub repo' },
+  { label: 'Index', description: 'Files chunked and embedded' },
+  { label: 'Search', description: 'Find code by intent' },
+  { label: 'Ask', description: 'Answers cited to file + line' },
+]
+
+const MOCK_TREE = [
+  { type: 'dir', name: 'src/' },
+  { type: 'dir', name: ' services/' },
+  { type: 'file', name: ' auth.py', active: true },
+  { type: 'file', name: ' db.py' },
+]
+
+const MOCK_CODE = [
+  { line: 12, text: 'def authenticate(request):', hit: true },
+  { line: 13, text: '    token = get_token(request)' },
+  { line: 14, text: '    return verify_token(token)' },
+]
+
+export default function Hero({ onAnalyzeRequest }: HeroProps) {
+  const [url, setUrl] = useState('')
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const target = url.trim()
+    if (!target) return
+    onAnalyzeRequest(target)
+  }
+
   return (
-    <section className="hero">
-      <div className="hero-background" aria-hidden="true" />
+    <section className="hero" id="top">
+      <div className="hero-bg" aria-hidden="true" />
       <Container>
         <div className="hero-inner">
-          <p className="hero-badge">
-            <span className="hero-badge-dot" aria-hidden="true" />
+          <span className="hero-eyebrow">
+            <span className="hero-eyebrow-dot" aria-hidden="true" />
             AI-powered codebase intelligence
-          </p>
+          </span>
           <h1 className="hero-title">
-            Understand Any Codebase <span className="hero-title-accent">With AI</span>
+            Understand any codebase — with <span className="hero-title-mono">sources</span>
           </h1>
           <p className="hero-subtitle">
-            DevDocs AI lets developers understand and interact with their codebase using AI.
-            Connect a repository, get instant documentation, and ask questions about your code
-            in plain language.
+            Connect a GitHub repository and turn it into searchable, queryable
+            documentation. Answers grounded in your actual code — not a summary of it.
           </p>
-          <div className="hero-actions">
-            <a className="btn btn-primary" href="#repository">
-              Connect Repository
-              <ArrowRightIcon size={16} />
-            </a>
-            <a className="btn btn-ghost" href="#ai">
-              Explore Documentation
-            </a>
+
+          <form className="hero-form" onSubmit={handleSubmit}>
+            <div className="hero-input-wrap">
+              <GitHubIcon size={16} className="input-icon" />
+              <input
+                className="input has-icon"
+                type="text"
+                inputMode="url"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                placeholder="github.com/owner/repository"
+                aria-label="GitHub repository URL"
+                value={url}
+                onChange={(event) => setUrl(event.target.value)}
+              />
+            </div>
+            <button type="submit" className="btn btn-primary" disabled={!url.trim()}>
+              Analyze
+              <ArrowRightIcon size={15} />
+            </button>
+          </form>
+
+          <div className="hero-hint">
+            <span className="hero-hint-item">
+              <GitHubIcon size={13} />
+              Public repositories only
+            </span>
+            <span className="hero-hint-item">
+              <CodeIcon size={13} />
+              <code>connect → index → search → ask</code>
+            </span>
           </div>
-          <dl className="hero-stats">
-            <div className="hero-stat">
-              <dt>Indexed</dt>
-              <dd>Repo &rarr; knowledge</dd>
+
+          <div className="hero-values">
+            {VALUE_STEPS.map((step, index) => (
+              <div className="hero-value" key={step.label}>
+                <span className="hero-value-index" aria-hidden="true">
+                  0{index + 1}
+                </span>
+                <span className="hero-value-label">{step.label}</span>
+                <span className="hero-value-desc">{step.description}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="hero-mock" aria-hidden="true">
+            <div className="mock-bar">
+              <span className="mock-title">workspace</span>
+              <span className="mock-status">indexed</span>
             </div>
-            <div className="hero-stat">
-              <dt>Answers</dt>
-              <dd>Grounded in code</dd>
+            <div className="mock-body">
+              <div className="mock-pane mock-tree">
+                <span className="mock-pane-label">Files</span>
+                {MOCK_TREE.map((row) => (
+                  <div
+                    className={`mock-tree-row${row.type === 'dir' ? ' is-dir' : ''}${'active' in row && row.active ? ' is-active' : ''}`}
+                    key={row.name}
+                  >
+                    {row.type === 'dir' ? <ChevronRightIcon size={13} /> : <FileIcon size={13} />}
+                    {row.name}
+                  </div>
+                ))}
+              </div>
+              <div className="mock-pane mock-code">
+                <span className="mock-pane-label">src/services/auth.py</span>
+                {MOCK_CODE.map((row) => (
+                  <div className={`mock-code-line${row.hit ? ' is-hit' : ''}`} key={row.line}>
+                    <span className="mock-ln">{row.line}</span>
+                    <span>{row.text}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mock-pane mock-ask">
+                <span className="mock-pane-label">Ask DevDocs</span>
+                <div className="mock-ask-box">How does authentication work?</div>
+                <div className="mock-answer">
+                  Auth is verified in <strong>src/services/auth.py</strong> —{' '}
+                  <code>authenticate()</code> extracts the token and calls{' '}
+                  <code>verify_token()</code>.
+                </div>
+                <div className="mock-source">
+                  <FileIcon size={13} />
+                  src/services/auth.py · :12–58
+                </div>
+              </div>
             </div>
-            <div className="hero-stat">
-              <dt>Docs</dt>
-              <dd>Always up to date</dd>
-            </div>
-          </dl>
+          </div>
         </div>
       </Container>
     </section>

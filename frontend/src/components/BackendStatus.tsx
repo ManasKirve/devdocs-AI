@@ -1,42 +1,39 @@
-import { useEffect, useState } from 'react'
-import { checkHealth } from '../services/health'
+import { useHealth, type BackendState } from '../hooks/useHealth'
+import type { HealthResponse } from '../types/health'
 
-type BackendState = 'loading' | 'connected' | 'offline'
-
-const LABELS: Record<Exclude<BackendState, 'loading'>, string> = {
-  connected: 'Backend Connected',
-  offline: 'Backend Offline',
+interface BackendStatusProps {
+  compact?: boolean
+  state?: BackendState
+  health?: HealthResponse | null
 }
 
-export default function BackendStatus() {
-  const [state, setState] = useState<BackendState>('loading')
+export default function BackendStatus({ compact = false, state, health }: BackendStatusProps) {
+  const internal = useHealth()
+  const current: BackendState = state ?? internal.state
+  const currentHealth = health ?? internal.health
 
-  useEffect(() => {
-    let cancelled = false
+  if (current === 'loading') {
+    return (
+      <span className="backend-status backend-status-loading" role="status" aria-live="polite">
+        <span className="backend-status-dot" aria-hidden="true" />
+        Checking API
+      </span>
+    )
+  }
 
-    checkHealth()
-      .then(() => {
-        if (!cancelled) setState('connected')
-      })
-      .catch(() => {
-        if (!cancelled) setState('offline')
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const label = state === 'loading' ? 'Checking backend' : LABELS[state]
+  if (current === 'offline') {
+    return (
+      <span className="backend-status backend-status-offline" role="status" aria-live="polite">
+        <span className="backend-status-dot" aria-hidden="true" />
+        API offline
+      </span>
+    )
+  }
 
   return (
-    <span
-      className={`backend-status backend-status-${state}`}
-      role="status"
-      aria-live="polite"
-    >
+    <span className="backend-status backend-status-connected" role="status" aria-live="polite">
       <span className="backend-status-dot" aria-hidden="true" />
-      {label}
+      {compact ? 'Connected' : currentHealth?.version ? `API · v${currentHealth.version}` : 'API connected'}
     </span>
   )
 }

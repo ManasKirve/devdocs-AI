@@ -1,12 +1,13 @@
+import BackendStatus from './BackendStatus'
 import Container from './Container'
 import Logo from './Logo'
 import { GitHubIcon } from './icons'
 
 const FOOTER_LINKS = [
   { label: 'Features', href: '#features' },
-  { label: 'Repositories', href: '#repository' },
-  { label: 'AI Assistant', href: '#ai' },
-  { label: 'Stack', href: '#technologies' },
+  { label: 'Analyze', href: '#analyze' },
+  { label: 'Search', href: '#search' },
+  { label: 'Q&A', href: '#qa' },
 ]
 
 export default function Footer() {
@@ -17,7 +18,8 @@ export default function Footer() {
           <div className="footer-brand">
             <Logo />
             <p className="footer-description">
-              AI-powered developer documentation and codebase intelligence platform.
+              DevDocs AI turns any GitHub repository into a searchable, queryable
+              knowledge base — with answers grounded in your real code.
             </p>
           </div>
 
@@ -30,17 +32,18 @@ export default function Footer() {
           </nav>
 
           <a
-            className="btn btn-ghost btn-sm footer-github"
+            className="btn btn-ghost btn-sm"
             href="https://github.com"
             target="_blank"
             rel="noreferrer"
           >
-            <GitHubIcon size={16} />
+            <GitHubIcon size={15} />
             GitHub
           </a>
         </div>
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} DevDocs AI. Built for developers.</p>
+          <BackendStatus compact />
         </div>
       </Container>
     </footer>

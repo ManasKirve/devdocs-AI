@@ -15,5 +15,7 @@ export interface IngestResponse {
   repository: string
   files_processed: number
   files_skipped: number
+  chunks_created: number
+  embeddings_created: number
   documents: DocumentMetadata[]
 }

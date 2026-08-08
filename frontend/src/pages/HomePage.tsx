@@ -1,23 +1,56 @@
+import { useRef, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
-import RepositoryAnalyzer from '../components/RepositoryAnalyzer'
 import Features from '../components/Features'
-import AISection from '../components/AISection'
-import AIPlayground from '../components/AIPlayground'
-import Technologies from '../components/Technologies'
+import RepositoryAnalyzer from '../components/RepositoryAnalyzer'
+import SearchSection from '../components/SearchSection'
+import CodebaseQA from '../components/CodebaseQA'
 import Footer from '../components/Footer'
+import OfflineBanner from '../components/OfflineBanner'
+import { useHealth } from '../hooks/useHealth'
 
 export default function HomePage() {
+  const [analyzedRepository, setAnalyzedRepository] = useState<string | null>(null)
+  const [heroUrl, setHeroUrl] = useState('')
+  const [bannerDismissed, setBannerDismissed] = useState(false)
+  const { state, health, recheck } = useHealth()
+  const analyzerSectionRef = useRef<HTMLElement>(null)
+
+  function handleAnalyzeRequest(url: string) {
+    setHeroUrl(url)
+    analyzerSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  function handleRepositoryChange(repository: string | null) {
+    setAnalyzedRepository(repository)
+  }
+
   return (
     <>
-      <Navbar />
+      <Navbar
+        repository={analyzedRepository}
+        backendState={state}
+        health={health}
+      />
+      <OfflineBanner
+        visible={state === 'offline' && !bannerDismissed}
+        onDismiss={() => setBannerDismissed(true)}
+        onRetry={() => {
+          setBannerDismissed(false)
+          recheck()
+        }}
+      />
       <main>
-        <Hero />
-        <RepositoryAnalyzer />
+        <Hero onAnalyzeRequest={handleAnalyzeRequest} />
         <Features />
-        <AISection />
-        <AIPlayground />
-        <Technologies />
+        <section ref={analyzerSectionRef}>
+          <RepositoryAnalyzer
+            onRepositoryChange={handleRepositoryChange}
+            initialUrl={heroUrl}
+          />
+        </section>
+        <SearchSection repository={analyzedRepository} />
+        <CodebaseQA repository={analyzedRepository} />
       </main>
       <Footer />
     </>
