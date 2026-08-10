@@ -7,6 +7,7 @@ import SplitText from './bits/SplitText'
 import TiltCard from './bits/TiltCard'
 import MagneticButton from './bits/MagneticButton'
 import AnimatedBackground from './bits/AnimatedBackground'
+import ParticleText from './bits/ParticleText'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import {
   ArrowRightIcon,
@@ -92,12 +93,37 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
     />
   )
 
+  const heroMark = prefersReducedMotion ? null : (
+    <div className="hero-particle-mark" aria-hidden="true">
+      <ParticleText
+        text="DevDocs AI"
+        particleSize={2}
+        density={3}
+        color="#ededed"
+        highlightColor="#3291ff"
+        scatter={140}
+        gatherDuration={1400}
+        stagger={320}
+        pointerRepel={36}
+        repelRadius={110}
+        idleDrift={0.5}
+        trigger="mount"
+        fontSize="clamp(2.5rem, 7vw, 4.5rem)"
+        fontWeight={600}
+        fontFamily="'Geist', -apple-system, 'Segoe UI', system-ui, sans-serif"
+        glow
+        style={{ minHeight: 0, height: '100%' }}
+      />
+    </div>
+  )
+
   return (
     <section className="hero" id="top">
       <div className="hero-bg" aria-hidden="true" />
       <AnimatedBackground />
       <Container>
         <div className="hero-inner">
+          {heroMark}
           <span className="hero-eyebrow">
             <span className="hero-eyebrow-dot" aria-hidden="true" />
             AI-powered codebase intelligence

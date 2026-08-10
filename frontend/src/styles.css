@@ -880,6 +880,20 @@ code {
   text-align: center;
 }
 
+.hero-particle-mark {
+  width: 100%;
+  height: 96px;
+  margin: 0 auto var(--space-6);
+  pointer-events: auto;
+}
+
+@media (max-width: 640px) {
+  .hero-particle-mark {
+    height: 72px;
+    margin-bottom: var(--space-4);
+  }
+}
+
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
