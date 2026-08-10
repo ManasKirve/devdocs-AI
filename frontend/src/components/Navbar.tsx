@@ -4,9 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { BackendState } from '../hooks/useHealth'
 import type { HealthResponse } from '../types/health'
 import BackendStatus from './BackendStatus'
-import GooeyNav from './bits/GooeyNav'
+import PillNav from './bits/PillNav'
 import Container from './Container'
-import Logo from './Logo'
 import { GitHubIcon } from './icons'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -26,89 +25,166 @@ interface NavbarProps {
   health?: HealthResponse | null
 }
 
-export default function Navbar({ repository = null, backendState, health }: NavbarProps) {
+export default function Navbar({
+  repository = null,
+  backendState,
+  health,
+}: NavbarProps) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [activeId, setActiveId] = useState<string | null>(null)
-  const headerRef = useRef<HTMLElement>(null)
+  const [activeId, setActiveId] =
+    useState<string | null>(null)
+
+  const headerRef =
+    useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const header = headerRef.current
+
     if (!header) return
-    setScrolled(window.scrollY > SCROLL_EDGE_PX)
+
+    setScrolled(
+      window.scrollY > SCROLL_EDGE_PX
+    )
+
     const st = ScrollTrigger.create({
       start: SCROLL_EDGE_PX,
+
       onToggle: (self) => {
         setScrolled(self.isActive)
       },
     })
+
     return () => {
       st.kill()
     }
   }, [])
 
   useEffect(() => {
-    const sections = NAV_LINKS.map((link) => link.href.replace('#', ''))
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => el !== null)
+    const sections = NAV_LINKS
+      .map((link) =>
+        link.href.replace('#', '')
+      )
+      .map((id) =>
+        document.getElementById(id)
+      )
+      .filter(
+        (el): el is HTMLElement =>
+          el !== null
+      )
+
     if (sections.length === 0) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActiveId(entry.target.id)
+
+    const observer =
+      new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              setActiveId(
+                entry.target.id
+              )
+            }
+          }
+        },
+        {
+          rootMargin:
+            '-35% 0px -55% 0px',
+          threshold: 0,
         }
-      },
-      { rootMargin: '-35% 0px -55% 0px', threshold: 0 },
-    )
-    for (const section of sections) observer.observe(section)
-    return () => observer.disconnect()
+      )
+
+    for (const section of sections) {
+      observer.observe(section)
+    }
+
+    return () =>
+      observer.disconnect()
   }, [])
 
   useEffect(() => {
     if (!open) return
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setOpen(false)
+
+    function onKeyDown(
+      event: KeyboardEvent
+    ) {
+      if (event.key === 'Escape') {
+        setOpen(false)
+      }
     }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
+
+    window.addEventListener(
+      'keydown',
+      onKeyDown
+    )
+
+    return () => {
+      window.removeEventListener(
+        'keydown',
+        onKeyDown
+      )
+    }
   }, [open])
 
   function closeMenu() {
     setOpen(false)
   }
 
-  const activeGooeyIndex = activeId
-    ? NAV_LINKS.findIndex((link) => link.href.replace('#', '') === activeId)
-    : -1
-
-  function handleGooeyChange(index: number) {
-    setActiveId(NAV_LINKS[index]?.href.replace('#', '') ?? null)
-  }
-
   return (
-    <header ref={headerRef} className={`navbar${scrolled ? ' is-scrolled' : ''}`}>
+    <header
+      ref={headerRef}
+      className={`navbar${
+        scrolled
+          ? ' is-scrolled'
+          : ''
+      }`}
+    >
       <Container>
-        <nav className="navbar-inner" aria-label="Main navigation">
-          <a className="navbar-brand" href="#top" aria-label="DevDocs AI home">
-            <Logo />
-          </a>
-
-          <div className="navbar-nav">
-            <GooeyNav
-              items={NAV_LINKS}
-              activeIndex={activeGooeyIndex >= 0 ? activeGooeyIndex : undefined}
-              onActiveIndexChange={handleGooeyChange}
-            />
-          </div>
+        <nav
+          className="navbar-inner"
+          aria-label="Primary"
+        >
+          <PillNav
+            logo="/logo.svg"
+            logoAlt="DevDocs"
+            items={NAV_LINKS}
+            activeHref={
+              activeId
+                ? `#${activeId}`
+                : undefined
+            }
+            className="custom-nav"
+            ease="power2.easeOut"
+            baseColor="#000000"
+            pillColor="#ffffff"
+            hoveredPillTextColor="#ffffff"
+            pillTextColor="#000000"
+            onMobileMenuClick={() => {
+              setOpen((value) => !value)
+            }}
+          />
 
           <div className="navbar-actions">
             {repository && (
-              <span className="navbar-repo" title={`Indexed: ${repository}`}>
-                <span className="navbar-repo-dot" aria-hidden="true" />
-                <span className="navbar-repo-name">{repository}</span>
+              <span
+                className="navbar-repo"
+                title={`Indexed: ${repository}`}
+              >
+                <span
+                  className="navbar-repo-dot"
+                  aria-hidden="true"
+                />
+
+                <span className="navbar-repo-name">
+                  {repository}
+                </span>
               </span>
             )}
-            <BackendStatus state={backendState} health={health} />
+
+            <BackendStatus
+              state={backendState}
+              health={health}
+            />
+
             <a
               className="btn btn-ghost btn-sm navbar-github-desktop"
               href="https://github.com"
@@ -118,16 +194,33 @@ export default function Navbar({ repository = null, backendState, health }: Navb
               <GitHubIcon size={15} />
               GitHub
             </a>
-            <a className="btn btn-primary btn-sm navbar-cta-desktop" href="#analyze">
+
+            <a
+              className="btn btn-primary btn-sm navbar-cta-desktop"
+              href="#analyze"
+            >
               Analyze
             </a>
+
             <button
               type="button"
-              className={`navbar-toggle${open ? ' is-open' : ''}`}
-              aria-label={open ? 'Close menu' : 'Open menu'}
+              className={`navbar-toggle${
+                open
+                  ? ' is-open'
+                  : ''
+              }`}
+              aria-label={
+                open
+                  ? 'Close menu'
+                  : 'Open menu'
+              }
               aria-expanded={open}
               aria-controls="navbar-menu"
-              onClick={() => setOpen((value) => !value)}
+              onClick={() =>
+                setOpen(
+                  (value) => !value
+                )
+              }
             >
               <span className="navbar-toggle-bar" />
               <span className="navbar-toggle-bar" />
@@ -137,25 +230,53 @@ export default function Navbar({ repository = null, backendState, health }: Navb
 
           <ul
             id="navbar-menu"
-            className={`navbar-links${open ? ' is-open' : ''}`}
+            className={`navbar-links${
+              open
+                ? ' is-open'
+                : ''
+            }`}
             aria-label="Primary"
           >
-            {NAV_LINKS.map((link) => {
-              const id = link.href.replace('#', '')
-              const isCurrent = activeId === id
-              return (
-                <li key={link.href}>
-                  <a
-                    className={`navbar-link${isCurrent ? ' is-active' : ''}`}
-                    href={link.href}
-                    aria-current={isCurrent ? 'true' : undefined}
-                    onClick={closeMenu}
+            {NAV_LINKS.map(
+              (link) => {
+                const id =
+                  link.href.replace(
+                    '#',
+                    ''
+                  )
+
+                const isCurrent =
+                  activeId === id
+
+                return (
+                  <li
+                    key={link.href}
                   >
-                    {link.label}
-                  </a>
-                </li>
-              )
-            })}
+                    <a
+                      className={`navbar-link${
+                        isCurrent
+                          ? ' is-active'
+                          : ''
+                      }`}
+                      href={
+                        link.href
+                      }
+                      aria-current={
+                        isCurrent
+                          ? 'true'
+                          : undefined
+                      }
+                      onClick={
+                        closeMenu
+                      }
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                )
+              }
+            )}
+
             <li className="navbar-links-github">
               <a
                 className="btn btn-ghost btn-sm btn-block"
@@ -167,8 +288,15 @@ export default function Navbar({ repository = null, backendState, health }: Navb
                 GitHub
               </a>
             </li>
+
             <li className="navbar-links-cta">
-              <a className="btn btn-primary btn-sm btn-block" href="#analyze" onClick={closeMenu}>
+              <a
+                className="btn btn-primary btn-sm btn-block"
+                href="#analyze"
+                onClick={
+                  closeMenu
+                }
+              >
                 Analyze repository
               </a>
             </li>
