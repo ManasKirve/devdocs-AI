@@ -24,10 +24,22 @@ interface HeroProps {
 const HERO_TITLE = 'Understand any codebase with sources.'
 
 const VALUE_STEPS = [
-  { label: 'Connect', description: 'Paste a public GitHub repo' },
-  { label: 'Index', description: 'Files chunked and embedded' },
-  { label: 'Search', description: 'Find code by intent' },
-  { label: 'Ask', description: 'Answers cited to file + line' },
+  {
+    label: 'Connect',
+    description: 'Paste a public GitHub repo',
+  },
+  {
+    label: 'Index',
+    description: 'Files chunked and embedded',
+  },
+  {
+    label: 'Search',
+    description: 'Find code by intent',
+  },
+  {
+    label: 'Ask',
+    description: 'Answers cited to file + line',
+  },
 ]
 
 const MOCK_TREE = [
@@ -38,9 +50,19 @@ const MOCK_TREE = [
 ]
 
 const MOCK_CODE = [
-  { line: 12, text: 'def authenticate(request):', hit: true },
-  { line: 13, text: '    token = get_token(request)' },
-  { line: 14, text: '    return verify_token(token)' },
+  {
+    line: 12,
+    text: 'def authenticate(request):',
+    hit: true,
+  },
+  {
+    line: 13,
+    text: '    token = get_token(request)',
+  },
+  {
+    line: 14,
+    text: '    return verify_token(token)',
+  },
 ]
 
 const MOCK_ASK_TEXT = [
@@ -49,10 +71,16 @@ const MOCK_ASK_TEXT = [
   'How is error handling handled?',
 ]
 
-export default function Hero({ onAnalyzeRequest }: HeroProps) {
+export default function Hero({
+  onAnalyzeRequest,
+}: HeroProps) {
   const [url, setUrl] = useState('')
-  const prefersReducedMotion = usePrefersReducedMotion()
-  const mockParallaxRef = useRef<HTMLDivElement | null>(null)
+
+  const prefersReducedMotion =
+    usePrefersReducedMotion()
+
+  const mockParallaxRef =
+    useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -78,7 +106,9 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
     }
   }, [prefersReducedMotion])
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault()
 
     const target = url.trim()
@@ -88,36 +118,33 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
     onAnalyzeRequest(target)
   }
 
-  const title = prefersReducedMotion ? (
-    <h1 className="hero-title">
-      {HERO_TITLE}
-    </h1>
-  ) : (
-    <FadeContent
-      duration={500}
-      delay={100}
-      threshold={0}
-      className="hero-title-wrap"
-    >
-      <h1 className="hero-title">
-        <TrueFocus
-          sentence="Understand any codebase with sources."
-          separator=" "
-          manualMode={false}
-          blurAmount={5}
-          borderColor="#00ff88"
-          glowColor="rgba(0, 255, 136, 0.6)"
-          animationDuration={0.5}
-          pauseBetweenAnimations={1}
-        />
-      </h1>
-    </FadeContent>
+  /*
+   * TRUE FOCUS TITLE
+   *
+   * TrueFocus is intentionally rendered directly here.
+   * We are NOT using prefersReducedMotion for the title,
+   * because that was preventing TrueFocus from rendering.
+   */
+  const title = (
+    <div className="hero-title">
+      <TrueFocus
+        sentence={HERO_TITLE}
+        separator=" "
+        manualMode={false}
+        blurAmount={5}
+        borderColor="#7c3aed"
+        glowColor="rgba(124, 58, 237, 0.6)"
+        animationDuration={0.5}
+        pauseBetweenAnimations={1}
+      />
+    </div>
   )
 
   return (
     <section className="hero">
       <Container>
         <div className="hero-content">
+
           {title}
 
           <FadeContent
@@ -127,15 +154,22 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
             className="hero-subtitle-wrap"
           >
             <p className="hero-subtitle">
-              Connect a GitHub repository and turn it into searchable,
-              queryable documentations. Answers grounded in your actual code
-              not a summary of it.
+              Connect a GitHub repository and turn it
+              into searchable, queryable
+              documentations. Answers grounded in your
+              actual code not a summary of it.
             </p>
           </FadeContent>
 
-          <form className="hero-form" onSubmit={handleSubmit}>
+          <form
+            className="hero-form"
+            onSubmit={handleSubmit}
+          >
             <div className="hero-input-wrap">
-              <GitHubIcon size={16} className="input-icon" />
+              <GitHubIcon
+                size={16}
+                className="input-icon"
+              />
 
               <input
                 className="input has-icon"
@@ -148,7 +182,9 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
                 placeholder="github.com/owner/repository"
                 aria-label="GitHub repository URL"
                 value={url}
-                onChange={(event) => setUrl(event.target.value)}
+                onChange={(event) =>
+                  setUrl(event.target.value)
+                }
               />
             </div>
 
@@ -158,6 +194,7 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
               disabled={!url.trim()}
             >
               Analyze
+
               <ArrowRightIcon size={15} />
             </button>
           </form>
@@ -165,14 +202,21 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
           <div className="hero-hint">
             <span className="hero-hint-item">
               <GitHubIcon size={13} />
+
               Public repositories only
             </span>
           </div>
 
           <div className="hero-values">
             {VALUE_STEPS.map((step, index) => (
-              <div className="hero-value" key={step.label}>
-                <span className="hero-value-index" aria-hidden="true">
+              <div
+                className="hero-value"
+                key={step.label}
+              >
+                <span
+                  className="hero-value-index"
+                  aria-hidden="true"
+                >
                   0{index + 1}
                 </span>
 
@@ -191,7 +235,10 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
             className="hero-mock-parallax"
             ref={mockParallaxRef}
           >
-            <div className="hero-mock" aria-hidden="true">
+            <div
+              className="hero-mock"
+              aria-hidden="true"
+            >
               <div className="mock-bar">
                 <span className="mock-title">
                   workspace
@@ -209,6 +256,7 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
               </div>
 
               <div className="mock-body">
+
                 <div className="mock-pane mock-tree">
                   <span className="mock-pane-label">
                     Files
@@ -217,7 +265,9 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
                   {MOCK_TREE.map((row) => (
                     <div
                       className={`mock-tree-row${
-                        row.type === 'dir' ? ' is-dir' : ''
+                        row.type === 'dir'
+                          ? ' is-dir'
+                          : ''
                       }${
                         'active' in row && row.active
                           ? ' is-active'
@@ -226,7 +276,9 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
                       key={row.name}
                     >
                       {row.type === 'dir' ? (
-                        <ChevronRightIcon size={13} />
+                        <ChevronRightIcon
+                          size={13}
+                        />
                       ) : (
                         <FileIcon size={13} />
                       )}
@@ -280,19 +332,23 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
                     <strong>
                       src/services/auth.py
                     </strong>{' '}
-                    — <code>authenticate()</code> extracts
-                    the token and calls{' '}
+                    —{' '}
+                    <code>authenticate()</code>{' '}
+                    extracts the token and calls{' '}
                     <code>verify_token()</code>.
                   </div>
 
                   <div className="mock-source">
                     <FileIcon size={13} />
+
                     src/services/auth.py · :12–58
                   </div>
                 </div>
+
               </div>
             </div>
           </div>
+
         </div>
       </Container>
     </section>
