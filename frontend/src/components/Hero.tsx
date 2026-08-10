@@ -52,12 +52,15 @@ const MOCK_ASK_TEXT = [
 export default function Hero({ onAnalyzeRequest }: HeroProps) {
   const [url, setUrl] = useState('')
   const prefersReducedMotion = usePrefersReducedMotion()
-  const mockParallaxRef = useRef<HTMLDivElement>(null)
+  const mockParallaxRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (prefersReducedMotion) return
+
     const el = mockParallaxRef.current
+
     if (!el) return
+
     const tween = gsap.to(el, {
       yPercent: 6,
       ease: 'none',
@@ -68,6 +71,7 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
         scrub: true,
       },
     })
+
     return () => {
       tween.scrollTrigger?.kill()
       tween.kill()
@@ -76,45 +80,63 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
     const target = url.trim()
+
     if (!target) return
+
     onAnalyzeRequest(target)
   }
 
   const title = prefersReducedMotion ? (
     <h1 className="hero-title">
-      Understand any codebase — with <span className="hero-title-mono">sources</span>
+      {HERO_TITLE}
     </h1>
   ) : (
-    <h1 className="hero-title">
-      <TrueFocus
-        sentence={HERO_TITLE}
-        manualMode={false}
-        blurAmount={5}
-        borderColor="red"
-        animationDuration={2}
-        pauseBetweenAnimations={1}
-      />
-    </h1>
+    <FadeContent
+      duration={500}
+      delay={100}
+      threshold={0}
+      className="hero-title-wrap"
+    >
+      <h1 className="hero-title">
+        <TrueFocus
+          sentence="Understand any codebase with sources."
+          separator=" "
+          manualMode={false}
+          blurAmount={5}
+          borderColor="#00ff88"
+          glowColor="rgba(0, 255, 136, 0.6)"
+          animationDuration={0.5}
+          pauseBetweenAnimations={1}
+        />
+      </h1>
+    </FadeContent>
   )
 
   return (
-    <section className="hero" id="top">
-      <div className="hero-bg" aria-hidden="true" />
+    <section className="hero">
       <Container>
-        <div className="hero-inner">
-
+        <div className="hero-content">
           {title}
-          <FadeContent duration={400} delay={280} threshold={0} className="hero-subtitle-wrap">
+
+          <FadeContent
+            duration={400}
+            delay={280}
+            threshold={0}
+            className="hero-subtitle-wrap"
+          >
             <p className="hero-subtitle">
-              Connect a GitHub repository and turn it into searchable, queryable
-              documentations. Answers grounded in your actual code not a summary of it.
+              Connect a GitHub repository and turn it into searchable,
+              queryable documentations. Answers grounded in your actual code
+              not a summary of it.
             </p>
           </FadeContent>
 
           <form className="hero-form" onSubmit={handleSubmit}>
             <div className="hero-input-wrap">
               <GitHubIcon size={16} className="input-icon" />
+
               <input
                 className="input has-icon"
                 type="text"
@@ -129,7 +151,12 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
                 onChange={(event) => setUrl(event.target.value)}
               />
             </div>
-            <button type="submit" className="btn btn-primary" disabled={!url.trim()}>
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={!url.trim()}
+            >
               Analyze
               <ArrowRightIcon size={15} />
             </button>
@@ -148,16 +175,28 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
                 <span className="hero-value-index" aria-hidden="true">
                   0{index + 1}
                 </span>
-                <span className="hero-value-label">{step.label}</span>
-                <span className="hero-value-desc">{step.description}</span>
+
+                <span className="hero-value-label">
+                  {step.label}
+                </span>
+
+                <span className="hero-value-desc">
+                  {step.description}
+                </span>
               </div>
             ))}
           </div>
 
-          <div className="hero-mock-parallax" ref={mockParallaxRef}>
+          <div
+            className="hero-mock-parallax"
+            ref={mockParallaxRef}
+          >
             <div className="hero-mock" aria-hidden="true">
               <div className="mock-bar">
-                <span className="mock-title">workspace</span>
+                <span className="mock-title">
+                  workspace
+                </span>
+
                 <TextType
                   as="span"
                   className="mock-status"
@@ -168,43 +207,84 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
                   typingSpeed={70}
                 />
               </div>
+
               <div className="mock-body">
                 <div className="mock-pane mock-tree">
-                  <span className="mock-pane-label">Files</span>
+                  <span className="mock-pane-label">
+                    Files
+                  </span>
+
                   {MOCK_TREE.map((row) => (
                     <div
-                      className={`mock-tree-row${row.type === 'dir' ? ' is-dir' : ''}${'active' in row && row.active ? ' is-active' : ''}`}
+                      className={`mock-tree-row${
+                        row.type === 'dir' ? ' is-dir' : ''
+                      }${
+                        'active' in row && row.active
+                          ? ' is-active'
+                          : ''
+                      }`}
                       key={row.name}
                     >
-                      {row.type === 'dir' ? <ChevronRightIcon size={13} /> : <FileIcon size={13} />}
+                      {row.type === 'dir' ? (
+                        <ChevronRightIcon size={13} />
+                      ) : (
+                        <FileIcon size={13} />
+                      )}
+
                       {row.name}
                     </div>
                   ))}
                 </div>
+
                 <div className="mock-pane mock-code">
-                  <span className="mock-pane-label">src/services/auth.py</span>
+                  <span className="mock-pane-label">
+                    src/services/auth.py
+                  </span>
+
                   {MOCK_CODE.map((row) => (
-                    <div className={`mock-code-line${row.hit ? ' is-hit' : ''}`} key={row.line}>
-                      <span className="mock-ln">{row.line}</span>
+                    <div
+                      className={`mock-code-line${
+                        row.hit ? ' is-hit' : ''
+                      }`}
+                      key={row.line}
+                    >
+                      <span className="mock-ln">
+                        {row.line}
+                      </span>
+
                       <span>{row.text}</span>
                     </div>
                   ))}
                 </div>
+
                 <div className="mock-pane mock-ask">
-                  <span className="mock-pane-label">Ask DevDocs</span>
+                  <span className="mock-pane-label">
+                    Ask DevDocs
+                  </span>
+
                   <RotatingText
                     texts={MOCK_ASK_TEXT}
                     mainClassName="mock-ask-box"
                     splitBy="words"
                     staggerDuration={0.02}
                     rotationInterval={4200}
-                    transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+                    transition={{
+                      type: 'spring',
+                      damping: 28,
+                      stiffness: 320,
+                    }}
                   />
+
                   <div className="mock-answer">
-                    Auth is verified in <strong>src/services/auth.py</strong> —{' '}
-                    <code>authenticate()</code> extracts the token and calls{' '}
+                    Auth is verified in{' '}
+                    <strong>
+                      src/services/auth.py
+                    </strong>{' '}
+                    — <code>authenticate()</code> extracts
+                    the token and calls{' '}
                     <code>verify_token()</code>.
                   </div>
+
                   <div className="mock-source">
                     <FileIcon size={13} />
                     src/services/auth.py · :12–58
