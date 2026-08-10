@@ -90,9 +90,9 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
       className="hero-title"
       tag="h1"
       splitType="words"
-      delay={45}
-      duration={0.55}
-      from={{ opacity: 0, y: 20 }}
+      delay={28}
+      duration={0.5}
+      from={{ opacity: 0, y: 16 }}
       to={{ opacity: 1, y: 0 }}
     />
   )

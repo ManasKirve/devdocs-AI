@@ -56,6 +56,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
         start,
         end,
         scrub: true,
+        once: true,
       },
     });
 
