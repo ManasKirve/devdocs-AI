@@ -1,76 +1,79 @@
 /* ===========================================================================
-   DevDocs AI — design system v2
-   Light, engineering-first. Vercel-grade restraint, Apple-grade interaction.
+   DevDocs AI — design system v2 (dark)
+   Dark, engineering-first. Vercel-grade restraint, Apple-grade interaction.
 
-   Principles (DESIGN.md + SKILL.md):
-   - Achromatic interface: #FAFAFA → #EBEBEB grayscale, #171717 text.
-     #0072F5 is the only interactive accent; #005FCC is the input focus blue.
+   Principles (DESIGN.md + SKILL.md), inverted to a dark achromatic surface:
+   - Achromatic interface: #000000 → #1F1F1F grayscale, #EDEDED text.
+     #3291FF is the only interactive accent (brightened for dark contrast);
+     #52A8FF is the input focus blue.
    - Typography: Geist Sans (400/500/600 — never 700), Geist Mono for code.
      Aggressive negative tracking on display sizes; body tracking near 0.
    - Elevation is shadow-as-border: 0 0 0 1px, never decorative borders.
+     Border color and depth-shadow opacity are boosted for a dark surface.
    - Radius: 6px default, 12px cards/panels, 9999px pills/badges.
    - Spacing: 4px base system.
    - Motion: fast, subtle, state-driven; reduced-motion honored globally.
    =========================================================================== */
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
   /* ------------------------------------------------------------- surfaces */
-  --bg: #fafafa;
-  --bg-elevated: #ffffff;
-  --bg-surface: #ffffff;
-  --bg-inset: #f2f2f2;
-  --bg-hover: #ebebeb;
-  --bg-active: #e4e4e4;
+  --bg: #000000;
+  --bg-elevated: #111111;
+  --bg-surface: #0a0a0a;
+  --bg-inset: #1a1a1a;
+  --bg-hover: #1f1f1f;
+  --bg-active: #2a2a2a;
 
   /* -------------------------------------------------------------- borders */
-  --border: rgba(0, 0, 0, 0.08);
-  --border-strong: rgba(0, 0, 0, 0.14);
-  --border-faint: rgba(0, 0, 0, 0.05);
-  --border-hover: rgba(0, 0, 0, 0.18);
+  --border: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --border-faint: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.28);
 
   /* ----------------------------------------------------------------- text */
-  --text-primary: #171717;
-  --text-secondary: #4d4d4d;
+  --text-primary: #ededed;
+  --text-secondary: #a1a1a1;
   --text-muted: #8f8f8f;
-  --text-faint: #a3a3a3;
+  --text-faint: #666666;
   --text-on-accent: #ffffff;
 
   /* --------------------------------------------------------------- accent */
-  --accent: #0072f5;
-  --accent-hover: #0060dc;
-  --accent-active: #0051b8;
-  --accent-text: #0072f5;
-  --accent-soft: rgba(0, 114, 245, 0.08);
-  --accent-border: rgba(0, 114, 245, 0.3);
-  --accent-underline: rgba(0, 114, 245, 0.45);
-  --focus-blue: #005fcc;
+  --accent: #3291ff;
+  --accent-hover: #52a8ff;
+  --accent-active: #0072f5;
+  --accent-text: #52a8ff;
+  --accent-soft: rgba(50, 145, 255, 0.14);
+  --accent-border: rgba(50, 145, 255, 0.4);
+  --accent-underline: rgba(50, 145, 255, 0.55);
+  --focus-blue: #52a8ff;
 
   /* ------------------------------------------------------------- semantic */
-  --green: #398e4a;
-  --green-soft: rgba(57, 142, 74, 0.1);
-  --green-border: rgba(57, 142, 74, 0.3);
-  --red: #e5484d;
-  --red-soft: rgba(229, 72, 77, 0.1);
-  --red-border: rgba(229, 72, 77, 0.3);
-  --yellow: #d97706;
-  --yellow-soft: rgba(217, 119, 6, 0.1);
-  --yellow-border: rgba(217, 119, 6, 0.3);
+  --green: #46a758;
+  --green-soft: rgba(70, 167, 88, 0.16);
+  --green-border: rgba(70, 167, 88, 0.35);
+  --red: #f2555a;
+  --red-soft: rgba(242, 85, 90, 0.16);
+  --red-border: rgba(242, 85, 90, 0.35);
+  --yellow: #f5a623;
+  --yellow-soft: rgba(245, 166, 35, 0.16);
+  --yellow-border: rgba(245, 166, 35, 0.35);
 
   /* ------------------------------------------ elevation (shadow-as-border) */
   --shadow-border: 0 0 0 1px var(--border);
   --shadow-border-strong: 0 0 0 1px var(--border-strong);
-  --shadow-sm: 0 0 0 1px var(--border), 0 2px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 0 0 1px var(--border), 0 2px 2px rgba(0, 0, 0, 0.04),
-    0 8px 8px -8px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 0 0 1px var(--border), 0 1px 1px rgba(0, 0, 0, 0.04),
-    0 8px 16px -8px rgba(0, 0, 0, 0.08), 0 24px 40px -12px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 0 0 1px var(--border), 0 2px 2px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 0 0 1px var(--border), 0 2px 2px rgba(0, 0, 0, 0.28),
+    0 8px 8px -8px rgba(0, 0, 0, 0.36);
+  --shadow-lg: 0 0 0 1px var(--border), 0 1px 1px rgba(0, 0, 0, 0.3),
+    0 8px 16px -8px rgba(0, 0, 0, 0.45), 0 24px 40px -12px rgba(0, 0, 0, 0.5);
 
   /* --------------------------------------------------------- focus rings */
-  /* double-ring: 2px white gap + 4px blue indicator — visible on any surface */
-  --focus-ring: 0 0 0 2px #fff, 0 0 0 4px var(--accent);
-  --focus-ring-input: 0 0 0 2px #fff, 0 0 0 4px var(--focus-blue);
+  /* double-ring: gap ring uses the elevated surface color (not literal white)
+     so it stays correct on a dark background, per --ds-background-100 token */
+  --focus-ring: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--accent);
+  --focus-ring-input: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--focus-blue);
 
   /* ---------------------------------------------------------------- radii */
   --radius-xs: 4px;
@@ -143,7 +146,7 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-height) + 24px);
   overflow-x: clip;
-  color-scheme: light;
+  color-scheme: dark;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -231,13 +234,13 @@ code {
 .qa-suggest-chip:focus-visible,
 .code-block-copy:focus-visible,
 .navbar-toggle:focus-visible {
-  box-shadow: 0 0 0 1px var(--border-strong), 0 0 0 3px #fff, 0 0 0 5px var(--accent);
+  box-shadow: 0 0 0 1px var(--border-strong), 0 0 0 3px var(--bg-elevated), 0 0 0 5px var(--accent);
 }
 
 /* focus ring stays visible on blue primary buttons — white inner ring isolates
    the blue indicator even on the accent fill */
 .btn-primary:focus-visible {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent);
+  box-shadow: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--accent);
 }
 
 /* form controls keep a visible double-ring on keyboard focus only */
@@ -277,7 +280,7 @@ code {
 
 .skip-link:focus-visible {
   top: 16px;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent), var(--shadow-md);
+  box-shadow: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--accent), var(--shadow-md);
 }
 
 /* thin, consistent scrollbars */
@@ -561,7 +564,7 @@ code {
 /* translucent material once content scrolls beneath the bar — the only
    blurred surface in the product (SKILL.md §12) */
 .navbar.is-scrolled {
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(10, 10, 10, 0.86);
   backdrop-filter: saturate(180%) blur(12px);
   -webkit-backdrop-filter: saturate(180%) blur(12px);
   box-shadow: var(--header-border-bottom);
@@ -1869,7 +1872,7 @@ code {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.06), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
   animation: shimmer 1.5s infinite;
 }
 
@@ -2424,28 +2427,28 @@ code {
   max-height: 320px;
 }
 
-/* token palette — GitHub-light lineage, no purple */
+/* token palette — GitHub-dark lineage, no purple */
 .tok-comment {
-  color: #6e7781;
+  color: #8b949e;
   font-style: italic;
 }
 .tok-string {
-  color: #0a3069;
+  color: #a5d6ff;
 }
 .tok-keyword {
-  color: #cf222e;
+  color: #ff7b72;
 }
 .tok-number {
-  color: #0550ae;
+  color: #79c0ff;
 }
 .tok-fn {
-  color: #0969da;
+  color: #39c5cf;
 }
 .tok-type {
-  color: #953800;
+  color: #ffa657;
 }
 .tok-constant {
-  color: #0550ae;
+  color: #79c0ff;
 }
 
 .tok-match {
@@ -3117,14 +3120,14 @@ code {
 /* high contrast — strengthen borders and focus visibility (SKILL.md §14) */
 @media (prefers-contrast: more) {
   :root {
-    --border: rgba(0, 0, 0, 0.18);
-    --border-strong: rgba(0, 0, 0, 0.28);
-    --border-faint: rgba(0, 0, 0, 0.14);
-    --border-hover: rgba(0, 0, 0, 0.32);
-    --accent-underline: rgba(0, 114, 245, 0.72);
+    --border: rgba(255, 255, 255, 0.32);
+    --border-strong: rgba(255, 255, 255, 0.45);
+    --border-faint: rgba(255, 255, 255, 0.24);
+    --border-hover: rgba(255, 255, 255, 0.55);
+    --accent-underline: rgba(50, 145, 255, 0.85);
   }
 
   :focus-visible {
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent);
+    box-shadow: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--accent);
   }
 }
