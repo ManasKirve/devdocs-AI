@@ -9,7 +9,7 @@ interface SpotlightCardProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 const SpotlightCard = React.forwardRef<HTMLElement, SpotlightCardProps>(function SpotlightCard(
-  { as = 'div', children, className = '', onPointerMove, onPointerLeave, ...props },
+  { as = 'div', children, className = '', style, onPointerMove, onPointerLeave, ...props },
   ref,
 ) {
   const cardRef = useRef<HTMLElement>(null);
@@ -44,6 +44,7 @@ const SpotlightCard = React.forwardRef<HTMLElement, SpotlightCardProps>(function
       ref,
       className: `spotlight-card${className ? ` ${className}` : ''}`,
       'data-reduced': prefersReducedMotion || undefined,
+      style: { '--spot-x': '50%', '--spot-y': '50%', ...style } as React.CSSProperties,
       onPointerMove: handlePointerMove,
       onPointerLeave: handlePointerLeave,
       ...props,
