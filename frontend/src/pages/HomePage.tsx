@@ -14,7 +14,7 @@ export default function HomePage() {
   const [heroUrl, setHeroUrl] = useState('')
   const [bannerDismissed, setBannerDismissed] = useState(false)
   const { state, health, recheck } = useHealth()
-  const analyzerSectionRef = useRef<HTMLElement>(null)
+  const analyzerSectionRef = useRef<HTMLDivElement>(null)
 
   function handleAnalyzeRequest(url: string) {
     setHeroUrl(url)
@@ -43,12 +43,12 @@ export default function HomePage() {
       <main>
         <Hero onAnalyzeRequest={handleAnalyzeRequest} />
         <Features />
-        <section ref={analyzerSectionRef}>
+        <div ref={analyzerSectionRef}>
           <RepositoryAnalyzer
             onRepositoryChange={handleRepositoryChange}
             initialUrl={heroUrl}
           />
-        </section>
+        </div>
         <SearchSection repository={analyzedRepository} />
         <CodebaseQA repository={analyzedRepository} />
       </main>

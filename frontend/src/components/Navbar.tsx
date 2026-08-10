@@ -50,6 +50,15 @@ export default function Navbar({ repository = null, backendState, health }: Navb
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    if (!open) return
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open])
+
   function closeMenu() {
     setOpen(false)
   }
@@ -62,14 +71,20 @@ export default function Navbar({ repository = null, backendState, health }: Navb
             <Logo />
           </a>
 
-          <ul className={`navbar-links${open ? ' is-open' : ''}`}>
+          <ul
+            id="navbar-menu"
+            className={`navbar-links${open ? ' is-open' : ''}`}
+            aria-label="Primary"
+          >
             {NAV_LINKS.map((link) => {
               const id = link.href.replace('#', '')
+              const isCurrent = activeId === id
               return (
                 <li key={link.href}>
                   <a
-                    className={`navbar-link${activeId === id ? ' is-active' : ''}`}
+                    className={`navbar-link${isCurrent ? ' is-active' : ''}`}
                     href={link.href}
+                    aria-current={isCurrent ? 'true' : undefined}
                     onClick={closeMenu}
                   >
                     {link.label}
@@ -122,6 +137,7 @@ export default function Navbar({ repository = null, backendState, health }: Navb
               className={`navbar-toggle${open ? ' is-open' : ''}`}
               aria-label={open ? 'Close menu' : 'Open menu'}
               aria-expanded={open}
+              aria-controls="navbar-menu"
               onClick={() => setOpen((value) => !value)}
             >
               <span className="navbar-toggle-bar" />
