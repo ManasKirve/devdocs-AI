@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { gsap } from 'gsap'
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
+import MagneticButton from './bits/MagneticButton'
+import CountUp from './bits/CountUp'
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import {
   AlertIcon,
   ArrowRightIcon,
@@ -11,7 +15,6 @@ import {
 import { getFriendlyError } from '../services/http'
 import { ingestRepository } from '../services/repositories'
 import type { IngestResponse } from '../types/repositories'
-import { formatCount } from '../lib/format'
 
 const PLACEHOLDER_URL = 'github.com/owner/repository'
 
@@ -56,12 +59,45 @@ export default function RepositoryAnalyzer({
   const [result, setResult] = useState<IngestResponse | null>(null)
   const [submittedUrl, setSubmittedUrl] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  const progressRef = useRef<HTMLDivElement>(null)
+  const prefersReducedMotion = usePrefersReducedMotion()
+
+  const isAnalyzing = status === 'analyzing'
 
   useEffect(() => {
     if (initialUrl) setUrl(initialUrl)
   }, [initialUrl])
 
-  const isAnalyzing = status === 'analyzing'
+  useEffect(() => {
+    const container = progressRef.current
+    if (!container || prefersReducedMotion) return
+    const target = container
+    function popActiveIcons() {
+      target.querySelectorAll<HTMLElement>('.progress-step.is-active .progress-step-icon').forEach((icon) => {
+        gsap.killTweensOf(icon)
+        gsap
+          .timeline()
+          .set(icon, { scale: 0.8 })
+          .to(icon, { scale: 1.05, duration: 0.22, ease: 'power2.out' })
+          .to(icon, { scale: 1, duration: 0.2, ease: 'power2.out' })
+      })
+    }
+    popActiveIcons()
+    const observer = new MutationObserver(popActiveIcons)
+    observer.observe(container, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+    return () => {
+      observer.disconnect()
+      container.querySelectorAll<HTMLElement>('.progress-step-icon').forEach((icon) => {
+        gsap.killTweensOf(icon)
+      })
+    }
+  }, [isAnalyzing, prefersReducedMotion])
+
   const dirty = url.trim().length > 0
   const valid = dirty && isValidRepositoryUrl(url)
   const showValidation = dirty && !valid
@@ -202,7 +238,7 @@ export default function RepositoryAnalyzer({
               ))}
             </div>
 
-            <button
+            <MagneticButton
               type="submit"
               className="btn btn-primary btn-lg btn-block"
               disabled={!valid || isAnalyzing}
@@ -218,7 +254,7 @@ export default function RepositoryAnalyzer({
                   <ArrowRightIcon size={15} />
                 </>
               )}
-            </button>
+            </MagneticButton>
             <p className="analyzer-hint">
               Public repositories only. Analysis runs on the DevDocs AI backend.
             </p>
@@ -231,7 +267,7 @@ export default function RepositoryAnalyzer({
 
             {isAnalyzing && (
               <FadeContent duration={250} threshold={0}>
-                <div className="progress" role="status" aria-live="polite">
+                <div className="progress" role="status" aria-live="polite" ref={progressRef}>
                 {STEPS.map((step, index) => {
                   const stepState = index === 0 ? 'active' : 'pending'
                   const detail =
@@ -291,19 +327,27 @@ export default function RepositoryAnalyzer({
                 <dl className="result-table">
                   <div className="result-row">
                     <dt>Files processed</dt>
-                    <dd>{formatCount(result.files_processed)}</dd>
+                    <dd>
+                      <CountUp value={result.files_processed} />
+                    </dd>
                   </div>
                   <div className="result-row">
                     <dt>Chunks created</dt>
-                    <dd>{formatCount(result.chunks_created)}</dd>
+                    <dd>
+                      <CountUp value={result.chunks_created} />
+                    </dd>
                   </div>
                   <div className="result-row">
                     <dt>Embeddings</dt>
-                    <dd>{formatCount(result.embeddings_created)}</dd>
+                    <dd>
+                      <CountUp value={result.embeddings_created} />
+                    </dd>
                   </div>
                   <div className="result-row">
                     <dt>Files skipped</dt>
-                    <dd>{formatCount(result.files_skipped)}</dd>
+                    <dd>
+                      <CountUp value={result.files_skipped} />
+                    </dd>
                   </div>
                   {result.documents.length > 0 && (
                     <div className="result-row">

@@ -1,7 +1,12 @@
-import { useState, type FormEvent } from 'react'
+import { useRef, useEffect, useState, type FormEvent } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
 import SplitText from './bits/SplitText'
+import TiltCard from './bits/TiltCard'
+import MagneticButton from './bits/MagneticButton'
+import AnimatedBackground from './bits/AnimatedBackground'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import {
   ArrowRightIcon,
@@ -9,6 +14,8 @@ import {
   FileIcon,
   GitHubIcon,
 } from './icons'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface HeroProps {
   onAnalyzeRequest: (url: string) => void
@@ -39,6 +46,27 @@ const MOCK_CODE = [
 export default function Hero({ onAnalyzeRequest }: HeroProps) {
   const [url, setUrl] = useState('')
   const prefersReducedMotion = usePrefersReducedMotion()
+  const mockParallaxRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (prefersReducedMotion) return
+    const el = mockParallaxRef.current
+    if (!el) return
+    const tween = gsap.to(el, {
+      yPercent: 6,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: el,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: true,
+      },
+    })
+    return () => {
+      tween.scrollTrigger?.kill()
+      tween.kill()
+    }
+  }, [prefersReducedMotion])
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -67,6 +95,7 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
   return (
     <section className="hero" id="top">
       <div className="hero-bg" aria-hidden="true" />
+      <AnimatedBackground />
       <Container>
         <div className="hero-inner">
           <span className="hero-eyebrow">
@@ -98,10 +127,10 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
                 onChange={(event) => setUrl(event.target.value)}
               />
             </div>
-            <button type="submit" className="btn btn-primary" disabled={!url.trim()}>
+            <MagneticButton type="submit" className="btn btn-primary" disabled={!url.trim()}>
               Analyze
               <ArrowRightIcon size={15} />
-            </button>
+            </MagneticButton>
           </form>
 
           <div className="hero-hint">
@@ -123,7 +152,9 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
             ))}
           </div>
 
-          <div className="hero-mock" aria-hidden="true">
+          <div className="hero-mock-parallax" ref={mockParallaxRef}>
+            <TiltCard className="hero-mock-tilt" maxTilt={5} perspective={1200}>
+              <div className="hero-mock" aria-hidden="true">
             <div className="mock-bar">
               <span className="mock-title">workspace</span>
               <span className="mock-status">indexed</span>
@@ -164,6 +195,8 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
                 </div>
               </div>
             </div>
+              </div>
+            </TiltCard>
           </div>
         </div>
       </Container>

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import AnswerContent from './AnswerContent'
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
+import SpotlightCard from './bits/SpotlightCard'
 import {
   AlertIcon,
   ArrowRightIcon,
@@ -245,7 +246,7 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
               )}
 
               {status === 'success' && result && (
-                <div className="answer">
+                <SpotlightCard className="answer">
                   <div className="answer-head">
                     <span className="answer-status-dot" aria-hidden="true" />
                     <span className="answer-name">DevDocs</span>
@@ -283,7 +284,7 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
                       </p>
                     )}
                   </div>
-                </div>
+                </SpotlightCard>
               )}
             </>
           )}

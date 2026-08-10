@@ -556,7 +556,7 @@ code {
   position: sticky;
   top: 0;
   z-index: 60;
-  background: var(--bg);
+  background: transparent;
   box-shadow: 0 1px 0 0 transparent;
   transition:
     background-color var(--duration-base) var(--ease-default),
@@ -564,12 +564,13 @@ code {
 }
 
 /* translucent material once content scrolls beneath the bar — the only
-   blurred surface in the product (SKILL.md §12) */
+   blurred surface in the product (SKILL.md §12). The background morphs from
+   transparent to the elevated surface as a shadow-as-border appears. */
 .navbar.is-scrolled {
-  background: rgba(10, 10, 10, 0.86);
+  background: var(--bg-elevated);
   backdrop-filter: saturate(180%) blur(12px);
   -webkit-backdrop-filter: saturate(180%) blur(12px);
-  box-shadow: var(--header-border-bottom);
+  box-shadow: 0 1px 0 0 var(--border);
 }
 
 .navbar-inner {
@@ -830,8 +831,50 @@ code {
   mask-image: radial-gradient(80% 90% at 50% 0%, #000 28%, transparent 100%);
 }
 
+/* slow-drifting dot field over the paper grid — ambient only, never interactive */
+.hero-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.5;
+  -webkit-mask-image: radial-gradient(75% 85% at 50% 0%, #000 25%, transparent 100%);
+  mask-image: radial-gradient(75% 85% at 50% 0%, #000 25%, transparent 100%);
+}
+
+.ambient-layer {
+  position: absolute;
+  left: -50%;
+  top: -50%;
+  right: -50%;
+  bottom: -50%;
+  background-image: radial-gradient(circle, var(--border-strong) 1px, transparent 1.5px);
+  background-size: 44px 44px;
+  animation: ambient-drift 90s linear infinite;
+}
+
+.ambient-layer.is-reverse {
+  animation-duration: 140s;
+  animation-direction: reverse;
+}
+
+.ambient-layer.is-static {
+  animation: none;
+}
+
+@keyframes ambient-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 44px 44px;
+  }
+}
+
 .hero-inner {
   position: relative;
+  z-index: 1;
   max-width: 780px;
   margin: 0 auto;
   text-align: center;
@@ -1195,20 +1238,37 @@ code {
   display: flex;
 }
 
-.features-grid > div > .feature-card {
+.features-grid > div > .feature-tilt {
+  flex: 1;
+  display: flex;
+}
+
+.features-grid .spotlight-feature {
+  flex: 1;
+  display: flex;
+}
+
+.features-grid .spotlight-feature > .feature-card {
   flex: 1;
 }
 
 .feature-card {
   height: 100%;
   padding: var(--space-6);
-  background: var(--bg-surface);
+}
+
+/* card shell moved to the spotlight wrapper so the cursor-follow glow can
+   render behind the content but above the surface */
+.spotlight-feature {
+  position: relative;
+  overflow: hidden;
   border-radius: var(--radius-lg);
+  background: var(--bg-surface);
   box-shadow: var(--shadow-border);
   transition: box-shadow var(--duration-fast) var(--ease-default);
 }
 
-.feature-card:hover {
+.spotlight-feature:hover {
   box-shadow: 0 0 0 1px var(--border-hover);
 }
 
@@ -1237,6 +1297,61 @@ code {
   font-size: var(--text-sm);
   line-height: 1.65;
   color: var(--text-secondary);
+}
+
+/* ------------------------------------------------------- bits / motion
+   self-contained GSAP-powered primitives (see src/components/bits/). All
+   pointer-driven motion is GSAP-only and fully disabled under reduced
+   motion; these classes only scaffold layout, never animate duration. */
+
+.tilt-card {
+  will-change: transform;
+}
+
+.hero-mock-parallax {
+  will-change: transform;
+}
+
+.magnetic-wrap {
+  display: inline-block;
+  will-change: transform;
+}
+
+.magnetic-wrap.is-block {
+  display: block;
+}
+
+/* cursor-follow spotlight: a radial accent glow painted behind content.
+   --spot-x / --spot-y are driven from pointermove, no keyframes involved. */
+.spotlight-card {
+  position: relative;
+}
+
+.spotlight-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    340px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--accent-soft),
+    transparent 65%
+  );
+  transition: opacity var(--duration-base) var(--ease-default);
+}
+
+.spotlight-card:hover .spotlight-overlay {
+  opacity: 1;
+}
+
+.spotlight-card[data-reduced] .spotlight-overlay {
+  opacity: 0 !important;
+}
+
+.spotlight-card > *:not(.spotlight-overlay) {
+  position: relative;
+  z-index: 1;
 }
 
 /* --------------------------------------------------- repository analyzer */

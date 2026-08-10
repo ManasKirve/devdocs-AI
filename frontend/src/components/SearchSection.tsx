@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import CodeBlock from './CodeBlock'
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
+import SpotlightCard from './bits/SpotlightCard'
 import { AlertIcon, ArrowRightIcon, FileIcon, RefreshIcon, SearchIcon } from './icons'
 import { getFriendlyError } from '../services/http'
 import { searchCodebase } from '../services/search'
@@ -25,7 +26,7 @@ function ResultRow({ item, terms }: { item: SearchResultItem; terms: string[] })
   const { directory, basename } = splitPath(item.file_path)
 
   return (
-    <article className="search-result">
+    <SpotlightCard as="article" className="search-result">
       <div className="search-result-head">
         <span className="search-result-file">
           <FileIcon size={14} />
@@ -48,7 +49,7 @@ function ResultRow({ item, terms }: { item: SearchResultItem; terms: string[] })
         showHeader={false}
         compact
       />
-    </article>
+    </SpotlightCard>
   )
 }
 

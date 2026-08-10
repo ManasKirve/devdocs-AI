@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { BackendState } from '../hooks/useHealth'
 import type { HealthResponse } from '../types/health'
 import BackendStatus from './BackendStatus'
 import Container from './Container'
 import Logo from './Logo'
 import { GitHubIcon } from './icons'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const NAV_LINKS = [
   { label: 'Capabilities', href: '#features' },
@@ -25,12 +29,19 @@ export default function Navbar({ repository = null, backendState, health }: Navb
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
+  const headerRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > SCROLL_EDGE_PX)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const header = headerRef.current
+    if (!header) return
+    setScrolled(window.scrollY > SCROLL_EDGE_PX)
+    const st = ScrollTrigger.create({
+      start: SCROLL_EDGE_PX,
+      onToggle: (self) => setScrolled(self.isActive),
+    })
+    return () => {
+      st.kill()
+    }
   }, [])
 
   useEffect(() => {
@@ -64,7 +75,7 @@ export default function Navbar({ repository = null, backendState, health }: Navb
   }
 
   return (
-    <header className={`navbar${scrolled ? ' is-scrolled' : ''}`}>
+    <header ref={headerRef} className={`navbar${scrolled ? ' is-scrolled' : ''}`}>
       <Container>
         <nav className="navbar-inner" aria-label="Main navigation">
           <a className="navbar-brand" href="#top" aria-label="DevDocs AI home">

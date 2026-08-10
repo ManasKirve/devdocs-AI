@@ -16,6 +16,7 @@ interface FadeContentProps extends React.HTMLAttributes<HTMLDivElement> {
   delay?: number;
   threshold?: number;
   initialOpacity?: number;
+  initialScale?: number;
   disappearAfter?: number;
   disappearDuration?: number;
   disappearEase?: string;
@@ -33,6 +34,7 @@ const FadeContent: React.FC<FadeContentProps> = ({
   delay = 0,
   threshold = 0.1,
   initialOpacity = 0,
+  initialScale = 1,
   disappearAfter = 0,
   disappearDuration = 0.5,
   disappearEase = 'power2.in',
@@ -50,7 +52,7 @@ const FadeContent: React.FC<FadeContentProps> = ({
     if (!el) return;
 
     if (prefersReducedMotion) {
-      gsap.set(el, { autoAlpha: 1, y: 0, filter: 'blur(0px)' });
+      gsap.set(el, { autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)' });
       return;
     }
 
@@ -63,12 +65,23 @@ const FadeContent: React.FC<FadeContentProps> = ({
     const startPct = (1 - threshold) * 100;
     const getSeconds = (val: number) => (val > 10 ? val / 1000 : val);
 
-    gsap.set(el, {
+    const startVars: gsap.TweenVars = {
       autoAlpha: initialOpacity,
       y,
       filter: blur ? 'blur(10px)' : 'blur(0px)',
-      willChange: 'opacity, transform'
-    });
+      willChange: 'opacity, transform',
+      scale: initialScale,
+    };
+    gsap.set(el, startVars);
+
+    const animateVars: gsap.TweenVars = {
+      autoAlpha: 1,
+      y: 0,
+      scale: 1,
+      filter: 'blur(0px)',
+      duration: getSeconds(duration),
+      ease: ease
+    };
 
     const tl = gsap.timeline({
       paused: true,
@@ -76,26 +89,22 @@ const FadeContent: React.FC<FadeContentProps> = ({
       onComplete: () => {
         if (onComplete) onComplete();
         if (disappearAfter > 0) {
-          gsap.to(el, {
+          const disappearVars: gsap.TweenVars = {
             autoAlpha: initialOpacity,
             y,
+            scale: initialScale,
             filter: blur ? 'blur(10px)' : 'blur(0px)',
             delay: getSeconds(disappearAfter),
             duration: getSeconds(disappearDuration),
             ease: disappearEase,
             onComplete: () => onDisappearanceComplete?.()
-          });
+          };
+          gsap.to(el, disappearVars);
         }
       }
     });
 
-    tl.to(el, {
-      autoAlpha: 1,
-      y: 0,
-      filter: 'blur(0px)',
-      duration: getSeconds(duration),
-      ease: ease
-    });
+    tl.to(el, animateVars);
 
     const st = ScrollTrigger.create({
       trigger: el,

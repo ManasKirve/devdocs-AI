@@ -1,5 +1,7 @@
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
+import TiltCard from './bits/TiltCard'
+import SpotlightCard from './bits/SpotlightCard'
 import { BookIcon, CodeIcon, SearchIcon } from './icons'
 
 const FEATURES = [
@@ -39,14 +41,24 @@ export default function Features() {
         </FadeContent>
         <div className="features-grid">
           {FEATURES.map((feature, index) => (
-            <FadeContent key={feature.title} duration={500} delay={index * 80} threshold={0.15}>
-              <div className="feature-card">
-                <div className="feature-icon" aria-hidden="true">
-                  <feature.icon size={19} />
-                </div>
-                <h3 className="feature-title">{feature.title}</h3>
-                <p className="feature-description">{feature.description}</p>
-              </div>
+            <FadeContent
+              key={feature.title}
+              duration={500}
+              delay={index * 100}
+              threshold={0.15}
+              initialScale={0.96}
+            >
+              <TiltCard className="feature-tilt" maxTilt={8}>
+                <SpotlightCard className="spotlight-feature">
+                  <div className="feature-card">
+                    <div className="feature-icon" aria-hidden="true">
+                      <feature.icon size={19} />
+                    </div>
+                    <h3 className="feature-title">{feature.title}</h3>
+                    <p className="feature-description">{feature.description}</p>
+                  </div>
+                </SpotlightCard>
+              </TiltCard>
             </FadeContent>
           ))}
         </div>
