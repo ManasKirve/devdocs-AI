@@ -108,7 +108,7 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
           <FadeContent duration={400} delay={280} threshold={0} className="hero-subtitle-wrap">
             <p className="hero-subtitle">
               Connect a GitHub repository and turn it into searchable, queryable
-              documentation. Answers grounded in your actual code not a summary of it.
+              documentations. Answers grounded in your actual code not a summary of it.
             </p>
           </FadeContent>
 
