@@ -37,7 +37,13 @@ export default function Navbar({ repository = null, backendState, health }: Navb
     setScrolled(window.scrollY > SCROLL_EDGE_PX)
     const st = ScrollTrigger.create({
       start: SCROLL_EDGE_PX,
-      onToggle: (self) => setScrolled(self.isActive),
+      onToggle: (self) => {
+        console.log('[navbar] onToggle isActive=', self.isActive, 'scrollY=', window.scrollY)
+        setScrolled(self.isActive)
+      },
+      onUpdate: (self) => {
+        console.log('[navbar] onUpdate isActive=', self.isActive, 'scrollY=', window.scrollY)
+      },
     })
     return () => {
       st.kill()

@@ -2,6 +2,7 @@ import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
+import { registerBits } from '../../debug/registry';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,6 +35,9 @@ const CountUp: React.FC<CountUpProps> = ({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    console.log('[bits] CountUp mounted', el);
+    registerBits('CountUp');
 
     if (prefersReducedMotion) {
       el.textContent = formatValue(value, decimals, separator);

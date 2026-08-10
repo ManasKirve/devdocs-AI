@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { useRef, useImperativeHandle } from 'react';
+import { useRef, useImperativeHandle, useEffect } from 'react';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
+import { registerBits } from '../../debug/registry';
 
 interface SpotlightCardProps extends React.HTMLAttributes<HTMLElement> {
   as?: React.ElementType;
@@ -16,6 +17,11 @@ const SpotlightCard = React.forwardRef<HTMLElement, SpotlightCardProps>(function
   const prefersReducedMotion = usePrefersReducedMotion();
 
   useImperativeHandle(ref, () => cardRef.current as HTMLElement);
+
+  useEffect(() => {
+    console.log('[bits] SpotlightCard mounted', cardRef.current);
+    registerBits('SpotlightCard');
+  }, []);
 
   function handlePointerMove(event: React.PointerEvent<HTMLElement>) {
     onPointerMove?.(event);

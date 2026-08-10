@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
+import { registerBits } from '../../debug/registry';
 
 interface MagneticButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onPointerMove' | 'onPointerLeave'> {
@@ -21,6 +22,8 @@ const MagneticButton = React.forwardRef<HTMLButtonElement, MagneticButtonProps>(
     const prefersReducedMotion = usePrefersReducedMotion();
 
     useEffect(() => {
+      console.log('[bits] MagneticButton mounted', wrapRef.current);
+      registerBits('MagneticButton');
       return () => {
         if (wrapRef.current) gsap.killTweensOf(wrapRef.current);
       };

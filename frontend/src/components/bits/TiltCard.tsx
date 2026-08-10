@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useRef, useEffect, useCallback, useImperativeHandle } from 'react';
 import { gsap } from 'gsap';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
+import { registerBits } from '../../debug/registry';
 
 interface TiltCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -71,6 +72,8 @@ const TiltCard = React.forwardRef<HTMLDivElement, TiltCardProps>(function TiltCa
   };
 
   useEffect(() => {
+    console.log('[bits] TiltCard mounted', cardRef.current);
+    registerBits('TiltCard');
     if (prefersReducedMotion) {
       const el = cardRef.current;
       if (el) gsap.set(el, { rotateX: 0, rotateY: 0 });
