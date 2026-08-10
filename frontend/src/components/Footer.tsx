@@ -3,10 +3,10 @@ import Container from './Container'
 import Logo from './Logo'
 import type { BackendState } from '../hooks/useHealth'
 import type { HealthResponse } from '../types/health'
-import { GitHubIcon } from './icons'
+import { ArrowUpRightIcon } from './icons'
 
-const FOOTER_LINKS = [
-  { label: 'Features', href: '#features' },
+const PRODUCT_LINKS = [
+  { label: 'Capabilities', href: '#features' },
   { label: 'Analyze', href: '#analyze' },
   { label: 'Search', href: '#search' },
   { label: 'Q&A', href: '#qa' },
@@ -21,7 +21,7 @@ export default function Footer({ backendState, health }: FooterProps) {
   return (
     <footer className="footer">
       <Container>
-        <div className="footer-inner">
+        <div className="footer-top">
           <div className="footer-brand">
             <Logo />
             <p className="footer-description">
@@ -30,24 +30,44 @@ export default function Footer({ backendState, health }: FooterProps) {
             </p>
           </div>
 
-          <nav className="footer-links" aria-label="Footer navigation">
-            {FOOTER_LINKS.map((link) => (
-              <a className="footer-link" key={link.label} href={link.href}>
-                {link.label}
-              </a>
-            ))}
-          </nav>
+          <div className="footer-columns">
+            <nav className="footer-col" aria-label="Product">
+              <h3 className="footer-col-title">Product</h3>
+              <ul className="footer-links">
+                {PRODUCT_LINKS.map((link) => (
+                  <li key={link.href}>
+                    <a className="footer-link" href={link.href}>
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
-          <a
-            className="btn btn-ghost btn-sm"
-            href="https://github.com"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <GitHubIcon size={15} />
-            GitHub
-          </a>
+            <nav className="footer-col" aria-label="Resources">
+              <h3 className="footer-col-title">Resources</h3>
+              <ul className="footer-links">
+                <li>
+                  <a className="footer-link" href="#how-it-works">
+                    How it works
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="footer-link footer-link-external"
+                    href="https://github.com"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    GitHub
+                    <ArrowUpRightIcon size={13} />
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
+
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} DevDocs AI. Built for developers.</p>
           <BackendStatus compact state={backendState} health={health} />

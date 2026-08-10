@@ -574,6 +574,7 @@ code {
 }
 
 .navbar-inner {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -620,11 +621,16 @@ code {
   color: var(--accent-text);
 }
 
-.navbar-links {
+/* desktop center — the GooeyNav liquid indicator (see below) lives here */
+.navbar-nav {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  margin-left: var(--space-1);
+  justify-content: center;
+}
+
+.navbar-links {
+  display: none;
 }
 
 .navbar-links-github,
@@ -660,13 +666,11 @@ code {
   font-weight: 600;
 }
 
-.navbar-spacer {
-  flex: 1;
-}
-
 .navbar-actions {
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
 }
 
@@ -740,6 +744,135 @@ code {
 
 .navbar-toggle.is-open .navbar-toggle-bar:nth-child(3) {
   transform: translateY(-3px) rotate(-45deg);
+}
+
+/* ------------------------------------------------------------ GooeyNav
+   Liquid active indicator (React Bits gooey-nav), adapted to vanilla CSS and
+   the DevDocs AI tokens. A blurred, contrast-boosted accent blob sits behind
+   the active link with a soft liquid edge; a few accent particles drip off on
+   activation. All colors stay in the blue accent family — no rainbow demo. */
+
+.gooey-nav {
+  --linear-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --color-1: var(--accent);
+  --color-2: var(--accent-hover);
+  --gooey-blur: 8px;
+  --gooey-contrast: 2.4;
+  position: relative;
+  display: inline-flex;
+}
+
+.gooey-nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 3;
+}
+
+.gooey-nav li {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.gooey-nav li.is-active a {
+  color: var(--text-on-accent);
+  font-weight: 600;
+}
+
+.gooey-nav a {
+  display: inline-block;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  outline: none;
+  transition: color var(--duration-fast) var(--ease-default);
+}
+
+.gooey-nav a:hover {
+  color: var(--text-primary);
+}
+
+.gooey-nav a:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.gooey-nav-effect {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  filter: blur(var(--gooey-blur)) contrast(var(--gooey-contrast));
+  mix-blend-mode: lighten;
+  transition: opacity var(--duration-base) var(--ease-default);
+}
+
+.gooey-nav.is-ready .gooey-nav-effect {
+  opacity: 1;
+  transition:
+    left 320ms var(--linear-ease),
+    top 320ms var(--linear-ease),
+    width 320ms var(--linear-ease),
+    height 320ms var(--linear-ease),
+    opacity var(--duration-base) var(--ease-default);
+}
+
+.gooey-nav-effect::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: #000;
+}
+
+.gooey-nav-effect::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+}
+
+.gooey-nav-effect.is-active::after {
+  animation: gooey-pill 380ms var(--linear-ease) forwards;
+}
+
+@keyframes gooey-pill {
+  0% {
+    transform: scale(0.2);
+    opacity: 0.5;
+  }
+  55% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.gooey-particle {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: 50%;
+  background: var(--color-1);
+  opacity: 0;
+}
+
+@keyframes gooey-fly {
+  from {
+    opacity: 0.85;
+  }
+  to {
+    transform: translate(var(--x), var(--y));
+    opacity: 0;
+  }
 }
 
 /* backend status pill */
@@ -2923,10 +3056,10 @@ code {
   margin-top: 40px;
   background: var(--bg-elevated);
   box-shadow: 0 -1px 0 0 var(--border);
-  padding: 56px 0 28px;
+  padding: 64px 0 28px;
 }
 
-.footer-inner {
+.footer-top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -2945,14 +3078,38 @@ code {
   color: var(--text-secondary);
 }
 
+.footer-columns {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-12);
+  flex-wrap: wrap;
+}
+
+.footer-col-title {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
 .footer-links {
   display: flex;
-  gap: var(--space-1);
   flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .footer-link {
-  padding: 6px var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  margin-left: -10px;
   border-radius: var(--radius-sm);
   font-size: var(--text-sm);
   color: var(--text-secondary);
@@ -2968,6 +3125,14 @@ code {
 
 .footer-link:active {
   background-color: var(--bg-active);
+}
+
+.footer-link-external svg {
+  color: var(--text-faint);
+}
+
+.footer-link-external:hover svg {
+  color: var(--text-muted);
 }
 
 .footer-bottom {
@@ -3068,6 +3233,22 @@ code {
   }
 }
 
+/* mid desktop — keep the centered GooeyNav uncluttered; repo chip is
+   auxiliary, drop it before the bar gets tight */
+@media (max-width: 1240px) {
+  .gooey-nav a {
+    padding: 7px 10px;
+  }
+
+  .navbar-actions {
+    gap: 8px;
+  }
+
+  .navbar-repo {
+    display: none;
+  }
+}
+
 @media (max-width: 1024px) {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -3089,7 +3270,12 @@ code {
     display: flex;
   }
 
+  .navbar-nav {
+    display: none;
+  }
+
   .navbar-links {
+    display: flex;
     position: absolute;
     top: var(--nav-height);
     left: 0;

@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { BackendState } from '../hooks/useHealth'
 import type { HealthResponse } from '../types/health'
 import BackendStatus from './BackendStatus'
+import GooeyNav from './bits/GooeyNav'
 import Container from './Container'
 import Logo from './Logo'
 import { GitHubIcon } from './icons'
@@ -12,7 +13,6 @@ gsap.registerPlugin(ScrollTrigger)
 
 const NAV_LINKS = [
   { label: 'Capabilities', href: '#features' },
-  { label: 'How it works', href: '#how-it-works' },
   { label: 'Analyze', href: '#analyze' },
   { label: 'Search', href: '#search' },
   { label: 'Q&A', href: '#qa' },
@@ -39,11 +39,7 @@ export default function Navbar({ repository = null, backendState, health }: Navb
     const st = ScrollTrigger.create({
       start: SCROLL_EDGE_PX,
       onToggle: (self) => {
-        console.log('[navbar] onToggle isActive=', self.isActive, 'scrollY=', window.scrollY)
         setScrolled(self.isActive)
-      },
-      onUpdate: (self) => {
-        console.log('[navbar] onUpdate isActive=', self.isActive, 'scrollY=', window.scrollY)
       },
     })
     return () => {
@@ -81,6 +77,14 @@ export default function Navbar({ repository = null, backendState, health }: Navb
     setOpen(false)
   }
 
+  const activeGooeyIndex = activeId
+    ? NAV_LINKS.findIndex((link) => link.href.replace('#', '') === activeId)
+    : -1
+
+  function handleGooeyChange(index: number) {
+    setActiveId(NAV_LINKS[index]?.href.replace('#', '') ?? null)
+  }
+
   return (
     <header ref={headerRef} className={`navbar${scrolled ? ' is-scrolled' : ''}`}>
       <Container>
@@ -88,6 +92,48 @@ export default function Navbar({ repository = null, backendState, health }: Navb
           <a className="navbar-brand" href="#top" aria-label="DevDocs AI home">
             <Logo />
           </a>
+
+          <div className="navbar-nav">
+            <GooeyNav
+              items={NAV_LINKS}
+              activeIndex={activeGooeyIndex >= 0 ? activeGooeyIndex : undefined}
+              onActiveIndexChange={handleGooeyChange}
+            />
+          </div>
+
+          <div className="navbar-actions">
+            {repository && (
+              <span className="navbar-repo" title={`Indexed: ${repository}`}>
+                <span className="navbar-repo-dot" aria-hidden="true" />
+                <span className="navbar-repo-name">{repository}</span>
+              </span>
+            )}
+            <BackendStatus state={backendState} health={health} />
+            <a
+              className="btn btn-ghost btn-sm navbar-github-desktop"
+              href="https://github.com"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <GitHubIcon size={15} />
+              GitHub
+            </a>
+            <a className="btn btn-primary btn-sm navbar-cta-desktop" href="#analyze">
+              Analyze
+            </a>
+            <button
+              type="button"
+              className={`navbar-toggle${open ? ' is-open' : ''}`}
+              aria-label={open ? 'Close menu' : 'Open menu'}
+              aria-expanded={open}
+              aria-controls="navbar-menu"
+              onClick={() => setOpen((value) => !value)}
+            >
+              <span className="navbar-toggle-bar" />
+              <span className="navbar-toggle-bar" />
+              <span className="navbar-toggle-bar" />
+            </button>
+          </div>
 
           <ul
             id="navbar-menu"
@@ -127,42 +173,6 @@ export default function Navbar({ repository = null, backendState, health }: Navb
               </a>
             </li>
           </ul>
-
-          <div className="navbar-spacer" />
-
-          <div className="navbar-actions">
-            {repository && (
-              <span className="navbar-repo" title={`Indexed: ${repository}`}>
-                <span className="navbar-repo-dot" aria-hidden="true" />
-                <span className="navbar-repo-name">{repository}</span>
-              </span>
-            )}
-            <BackendStatus state={backendState} health={health} />
-            <a
-              className="btn btn-ghost btn-sm navbar-github-desktop"
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <GitHubIcon size={15} />
-              GitHub
-            </a>
-            <a className="btn btn-primary btn-sm navbar-cta-desktop" href="#analyze">
-              Analyze
-            </a>
-            <button
-              type="button"
-              className={`navbar-toggle${open ? ' is-open' : ''}`}
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              aria-expanded={open}
-              aria-controls="navbar-menu"
-              onClick={() => setOpen((value) => !value)}
-            >
-              <span className="navbar-toggle-bar" />
-              <span className="navbar-toggle-bar" />
-              <span className="navbar-toggle-bar" />
-            </button>
-          </div>
         </nav>
       </Container>
     </header>
