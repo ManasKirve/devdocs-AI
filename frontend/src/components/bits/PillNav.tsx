@@ -439,7 +439,7 @@ const PillNav = ({
         }
 
         .pill-nav {
-          --nav-h: 42px;
+          --nav-h: 52px;
           --logo: 36px;
           --pill-pad-x: 18px;
           --pill-gap: 3px;
@@ -447,6 +447,7 @@ const PillNav = ({
           width: max-content;
           display: flex;
           align-items: center;
+          gap: 10px;
           box-sizing: border-box;
         }
 
@@ -456,6 +457,7 @@ const PillNav = ({
             justify-content: space-between;
             padding: 0 1rem;
             background: transparent;
+            gap: 10px;
           }
         }
 
@@ -480,6 +482,7 @@ const PillNav = ({
           overflow: hidden;
           text-decoration: none;
           box-sizing: border-box;
+          flex-shrink: 0;
         }
 
         .pill-logo img {
@@ -519,7 +522,7 @@ const PillNav = ({
           border-radius: 9999px;
           box-sizing: border-box;
           font-weight: 600;
-          font-size: 16px;
+          font-size: 14px;
           line-height: 0;
           text-transform: uppercase;
           letter-spacing: 0.2px;
@@ -620,7 +623,7 @@ const PillNav = ({
         }
 
         .hamburger-line {
-          width: 16px;
+          width: 14px;
           height: 2px;
           background: var(--pill-bg, #fff);
           border-radius: 1px;
@@ -665,7 +668,7 @@ const PillNav = ({
             #fff
           );
           text-decoration: none;
-          font-size: 16px;
+          font-size: 14px;
           font-weight: 500;
           border-radius: 50px;
           transition: all 0.2s ease;

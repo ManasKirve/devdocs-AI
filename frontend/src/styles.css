@@ -128,7 +128,7 @@
 
   /* --------------------------------------------------------------- layout */
   --max-width: 1200px;
-  --nav-height: 60px;
+  --nav-height: 72px;
   --header-border-bottom: 0 1px 0 0 rgba(0, 0, 0, 0.08);
 
   /* ----------------------------------------------------------------- motion
@@ -3391,7 +3391,7 @@ code {
   }
 
   .navbar {
-    --nav-height: 56px;
+    --nav-height: 68px;
   }
 
   .backend-status {
