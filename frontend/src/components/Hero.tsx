@@ -6,6 +6,7 @@ import FadeContent from './bits/FadeContent'
 import SplitText from './bits/SplitText'
 import TextType from './bits/TextType'
 import RotatingText from './bits/RotatingText'
+import TrueFocus from './bits/TrueFocus'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import {
   ArrowRightIcon,
@@ -20,7 +21,7 @@ interface HeroProps {
   onAnalyzeRequest: (url: string) => void
 }
 
-const HERO_TITLE = 'Understand any codebase — with sources.'
+const HERO_TITLE = 'Understand any codebase with sources.'
 
 const VALUE_STEPS = [
   { label: 'Connect', description: 'Paste a public GitHub repo' },
@@ -85,16 +86,16 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
       Understand any codebase — with <span className="hero-title-mono">sources</span>
     </h1>
   ) : (
-    <SplitText
-      text={HERO_TITLE}
-      className="hero-title"
-      tag="h1"
-      splitType="words"
-      delay={28}
-      duration={0.5}
-      from={{ opacity: 0, y: 16 }}
-      to={{ opacity: 1, y: 0 }}
-    />
+    <h1 className="hero-title">
+      <TrueFocus
+        sentence={HERO_TITLE}
+        manualMode={false}
+        blurAmount={5}
+        borderColor="red"
+        animationDuration={2}
+        pauseBetweenAnimations={1}
+      />
+    </h1>
   )
 
   return (
@@ -102,15 +103,12 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
       <div className="hero-bg" aria-hidden="true" />
       <Container>
         <div className="hero-inner">
-          <span className="hero-eyebrow">
-            <span className="hero-eyebrow-dot" aria-hidden="true" />
-            AI-powered codebase intelligence
-          </span>
+
           {title}
           <FadeContent duration={400} delay={280} threshold={0} className="hero-subtitle-wrap">
             <p className="hero-subtitle">
               Connect a GitHub repository and turn it into searchable, queryable
-              documentation. Answers grounded in your actual code — not a summary of it.
+              documentation. Answers grounded in your actual code not a summary of it.
             </p>
           </FadeContent>
 
