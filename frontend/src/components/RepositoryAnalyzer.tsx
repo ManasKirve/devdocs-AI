@@ -2,8 +2,9 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { gsap } from 'gsap'
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
-import MagneticButton from './bits/MagneticButton'
+import ScrollReveal from './bits/ScrollReveal'
 import CountUp from './bits/CountUp'
+import DecryptedText from './bits/DecryptedText'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import {
   AlertIcon,
@@ -172,7 +173,9 @@ export default function RepositoryAnalyzer({
           <FadeContent duration={600} threshold={0.15}>
             <div className="analyzer-copy">
               <p className="eyebrow">Get started</p>
-              <h2 className="section-title">Analyze a repository</h2>
+              <ScrollReveal as="h2" className="section-title">
+                Analyze a repository
+              </ScrollReveal>
               <p className="section-subtitle">
                 Paste a public GitHub repository URL. DevDocs AI fetches, chunks, and
                 embeds your code, then exposes it to semantic search and grounded Q&amp;A.
@@ -238,7 +241,7 @@ export default function RepositoryAnalyzer({
               ))}
             </div>
 
-            <MagneticButton
+            <button
               type="submit"
               className="btn btn-primary btn-lg btn-block"
               disabled={!valid || isAnalyzing}
@@ -254,7 +257,7 @@ export default function RepositoryAnalyzer({
                   <ArrowRightIcon size={15} />
                 </>
               )}
-            </MagneticButton>
+            </button>
             <p className="analyzer-hint">
               Public repositories only. Analysis runs on the DevDocs AI backend.
             </p>
@@ -321,7 +324,15 @@ export default function RepositoryAnalyzer({
                 <div className="result-card" role="status">
                 <div className="result-identity">
                   <span className="result-status-dot" aria-hidden="true" />
-                  <span className="result-status-label">Indexed</span>
+                  <DecryptedText
+                    text="Indexed"
+                    animateOn="view"
+                    sequential
+                    speed={45}
+                    maxIterations={1}
+                    className="result-status-label"
+                    revealDirection="start"
+                  />
                   <code className="result-repo">{result.repository}</code>
                 </div>
                 <dl className="result-table">

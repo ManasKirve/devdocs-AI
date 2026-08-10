@@ -880,20 +880,6 @@ code {
   text-align: center;
 }
 
-.hero-particle-mark {
-  width: 100%;
-  height: 96px;
-  margin: 0 auto var(--space-6);
-  pointer-events: auto;
-}
-
-@media (max-width: 640px) {
-  .hero-particle-mark {
-    height: 72px;
-    margin-bottom: var(--space-4);
-  }
-}
-
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -1252,37 +1238,26 @@ code {
   display: flex;
 }
 
-.features-grid > div > .feature-tilt {
-  flex: 1;
+.features-grid > div {
   display: flex;
 }
 
-.features-grid .spotlight-feature {
-  flex: 1;
-  display: flex;
-}
-
-.features-grid .spotlight-feature > .feature-card {
+.features-grid > div > .feature-card {
   flex: 1;
 }
 
 .feature-card {
-  height: 100%;
-  padding: var(--space-6);
-}
-
-/* card shell moved to the spotlight wrapper so the cursor-follow glow can
-   render behind the content but above the surface */
-.spotlight-feature {
   position: relative;
   overflow: hidden;
+  height: 100%;
+  padding: var(--space-6);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
   box-shadow: var(--shadow-border);
   transition: box-shadow var(--duration-fast) var(--ease-default);
 }
 
-.spotlight-feature:hover {
+.feature-card:hover {
   box-shadow: 0 0 0 1px var(--border-hover);
 }
 
@@ -1313,59 +1288,213 @@ code {
   color: var(--text-secondary);
 }
 
+/* ---------------------------------------------------------- how it works */
+
+.stepper {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.stepper-card {
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-border);
+}
+
+.stepper-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.stepper-indicator {
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stepper-indicator.is-disabled {
+  cursor: default;
+}
+
+.stepper-indicator-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--text-on-accent);
+  box-shadow: 0 0 0 1px var(--border-strong);
+}
+
+.stepper-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-on-accent);
+}
+
+.stepper-indicator-num {
+  color: var(--text-muted);
+}
+
+.stepper-check {
+  width: 14px;
+  height: 14px;
+  color: var(--text-on-accent);
+}
+
+.stepper-connector {
+  flex: 1;
+  height: 2px;
+  margin: 0 10px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.stepper-connector-fill {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.stepper-content {
+  position: relative;
+  overflow: hidden;
+}
+
+.stepper-step-content {
+  padding: var(--space-4) 0;
+}
+
+.stepper-step-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.stepper-step-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.06em;
+  color: var(--accent-text);
+}
+
+.stepper-step-title {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  letter-spacing: var(--tracking-h3);
+  color: var(--text-primary);
+}
+
+.stepper-step-text {
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.stepper-footer {
+  margin-top: var(--space-4);
+}
+
+.stepper-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
 /* ------------------------------------------------------- bits / motion
    self-contained GSAP-powered primitives (see src/components/bits/). All
    pointer-driven motion is GSAP-only and fully disabled under reduced
    motion; these classes only scaffold layout, never animate duration. */
 
-.tilt-card {
-  will-change: transform;
-}
-
 .hero-mock-parallax {
   will-change: transform;
 }
 
-.magnetic-wrap {
-  display: inline-block;
-  will-change: transform;
-}
-
-.magnetic-wrap.is-block {
-  display: block;
-}
-
-/* cursor-follow spotlight: a radial accent glow painted behind content.
-   --spot-x / --spot-y are driven from pointermove, no keyframes involved. */
-.spotlight-card {
-  position: relative;
-}
-
-.spotlight-overlay {
+/* visually hidden text for accessibility helpers (sr-only spans) */
+.sr-only {
   position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* noise overlay — fixed full-viewport film grain, purely decorative */
+.noise-canvas {
+  position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 40;
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
+}
+
+/* text-type — one-shot or looping typewriter text */
+.text-type {
+  display: inline-flex;
+  align-items: center;
+}
+
+.text-type-inner {
+  display: inline-block;
+  white-space: pre;
+}
+
+.text-type-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  font-weight: 300;
+}
+
+.text-type-cursor.is-hidden {
   opacity: 0;
-  background: radial-gradient(
-    340px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-    var(--accent-soft),
-    transparent 65%
-  );
-  transition: opacity var(--duration-base) var(--ease-default);
 }
 
-.spotlight-card:hover .spotlight-overlay {
-  opacity: 1;
+/* rotating-text — word groups cycle through a phrase list */
+.rotating-text {
+  display: inline-flex;
+  vertical-align: middle;
+  max-width: 100%;
 }
 
-.spotlight-card[data-reduced] .spotlight-overlay {
-  opacity: 0 !important;
+.rotating-text-row,
+.rotating-text-lines {
+  display: inline-flex;
+  white-space: nowrap;
 }
 
-.spotlight-card > *:not(.spotlight-overlay) {
-  position: relative;
-  z-index: 1;
+.rotating-text-word {
+  display: inline-flex;
+  white-space: pre;
+}
+
+.rotating-text-char {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.rotating-text-space {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* decrypted-text — scramble-then-reveal label */
+.decrypted-text {
+  display: inline-block;
+  white-space: pre-wrap;
 }
 
 /* --------------------------------------------------- repository analyzer */

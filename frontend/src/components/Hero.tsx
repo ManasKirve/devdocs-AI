@@ -4,10 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
 import SplitText from './bits/SplitText'
-import TiltCard from './bits/TiltCard'
-import MagneticButton from './bits/MagneticButton'
-import AnimatedBackground from './bits/AnimatedBackground'
-import ParticleText from './bits/ParticleText'
+import TextType from './bits/TextType'
+import RotatingText from './bits/RotatingText'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import {
   ArrowRightIcon,
@@ -42,6 +40,12 @@ const MOCK_CODE = [
   { line: 12, text: 'def authenticate(request):', hit: true },
   { line: 13, text: '    token = get_token(request)' },
   { line: 14, text: '    return verify_token(token)' },
+]
+
+const MOCK_ASK_TEXT = [
+  'How does authentication work?',
+  'Where is the database schema?',
+  'How is error handling handled?',
 ]
 
 export default function Hero({ onAnalyzeRequest }: HeroProps) {
@@ -93,37 +97,11 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
     />
   )
 
-  const heroMark = prefersReducedMotion ? null : (
-    <div className="hero-particle-mark" aria-hidden="true">
-      <ParticleText
-        text="DevDocs AI"
-        particleSize={2}
-        density={3}
-        color="#ededed"
-        highlightColor="#3291ff"
-        scatter={140}
-        gatherDuration={1400}
-        stagger={320}
-        pointerRepel={36}
-        repelRadius={110}
-        idleDrift={0.5}
-        trigger="mount"
-        fontSize="clamp(2.5rem, 7vw, 4.5rem)"
-        fontWeight={600}
-        fontFamily="'Geist', -apple-system, 'Segoe UI', system-ui, sans-serif"
-        glow
-        style={{ minHeight: 0, height: '100%' }}
-      />
-    </div>
-  )
-
   return (
     <section className="hero" id="top">
       <div className="hero-bg" aria-hidden="true" />
-      <AnimatedBackground />
       <Container>
         <div className="hero-inner">
-          {heroMark}
           <span className="hero-eyebrow">
             <span className="hero-eyebrow-dot" aria-hidden="true" />
             AI-powered codebase intelligence
@@ -153,10 +131,10 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
                 onChange={(event) => setUrl(event.target.value)}
               />
             </div>
-            <MagneticButton type="submit" className="btn btn-primary" disabled={!url.trim()}>
+            <button type="submit" className="btn btn-primary" disabled={!url.trim()}>
               Analyze
               <ArrowRightIcon size={15} />
-            </MagneticButton>
+            </button>
           </form>
 
           <div className="hero-hint">
@@ -179,50 +157,63 @@ export default function Hero({ onAnalyzeRequest }: HeroProps) {
           </div>
 
           <div className="hero-mock-parallax" ref={mockParallaxRef}>
-            <TiltCard className="hero-mock-tilt" maxTilt={5} perspective={1200}>
-              <div className="hero-mock" aria-hidden="true">
-            <div className="mock-bar">
-              <span className="mock-title">workspace</span>
-              <span className="mock-status">indexed</span>
-            </div>
-            <div className="mock-body">
-              <div className="mock-pane mock-tree">
-                <span className="mock-pane-label">Files</span>
-                {MOCK_TREE.map((row) => (
-                  <div
-                    className={`mock-tree-row${row.type === 'dir' ? ' is-dir' : ''}${'active' in row && row.active ? ' is-active' : ''}`}
-                    key={row.name}
-                  >
-                    {row.type === 'dir' ? <ChevronRightIcon size={13} /> : <FileIcon size={13} />}
-                    {row.name}
-                  </div>
-                ))}
+            <div className="hero-mock" aria-hidden="true">
+              <div className="mock-bar">
+                <span className="mock-title">workspace</span>
+                <TextType
+                  as="span"
+                  className="mock-status"
+                  text="indexed"
+                  showCursor={false}
+                  loop={false}
+                  initialDelay={700}
+                  typingSpeed={70}
+                />
               </div>
-              <div className="mock-pane mock-code">
-                <span className="mock-pane-label">src/services/auth.py</span>
-                {MOCK_CODE.map((row) => (
-                  <div className={`mock-code-line${row.hit ? ' is-hit' : ''}`} key={row.line}>
-                    <span className="mock-ln">{row.line}</span>
-                    <span>{row.text}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mock-pane mock-ask">
-                <span className="mock-pane-label">Ask DevDocs</span>
-                <div className="mock-ask-box">How does authentication work?</div>
-                <div className="mock-answer">
-                  Auth is verified in <strong>src/services/auth.py</strong> —{' '}
-                  <code>authenticate()</code> extracts the token and calls{' '}
-                  <code>verify_token()</code>.
+              <div className="mock-body">
+                <div className="mock-pane mock-tree">
+                  <span className="mock-pane-label">Files</span>
+                  {MOCK_TREE.map((row) => (
+                    <div
+                      className={`mock-tree-row${row.type === 'dir' ? ' is-dir' : ''}${'active' in row && row.active ? ' is-active' : ''}`}
+                      key={row.name}
+                    >
+                      {row.type === 'dir' ? <ChevronRightIcon size={13} /> : <FileIcon size={13} />}
+                      {row.name}
+                    </div>
+                  ))}
                 </div>
-                <div className="mock-source">
-                  <FileIcon size={13} />
-                  src/services/auth.py · :12–58
+                <div className="mock-pane mock-code">
+                  <span className="mock-pane-label">src/services/auth.py</span>
+                  {MOCK_CODE.map((row) => (
+                    <div className={`mock-code-line${row.hit ? ' is-hit' : ''}`} key={row.line}>
+                      <span className="mock-ln">{row.line}</span>
+                      <span>{row.text}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mock-pane mock-ask">
+                  <span className="mock-pane-label">Ask DevDocs</span>
+                  <RotatingText
+                    texts={MOCK_ASK_TEXT}
+                    mainClassName="mock-ask-box"
+                    splitBy="words"
+                    staggerDuration={0.02}
+                    rotationInterval={4200}
+                    transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+                  />
+                  <div className="mock-answer">
+                    Auth is verified in <strong>src/services/auth.py</strong> —{' '}
+                    <code>authenticate()</code> extracts the token and calls{' '}
+                    <code>verify_token()</code>.
+                  </div>
+                  <div className="mock-source">
+                    <FileIcon size={13} />
+                    src/services/auth.py · :12–58
+                  </div>
                 </div>
               </div>
             </div>
-              </div>
-            </TiltCard>
           </div>
         </div>
       </Container>

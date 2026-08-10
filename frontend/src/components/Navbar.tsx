@@ -12,6 +12,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 const NAV_LINKS = [
   { label: 'Capabilities', href: '#features' },
+  { label: 'How it works', href: '#how-it-works' },
   { label: 'Analyze', href: '#analyze' },
   { label: 'Search', href: '#search' },
   { label: 'Q&A', href: '#qa' },

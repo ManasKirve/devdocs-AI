@@ -1,7 +1,6 @@
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
-import TiltCard from './bits/TiltCard'
-import SpotlightCard from './bits/SpotlightCard'
+import ScrollReveal from './bits/ScrollReveal'
 import { BookIcon, CodeIcon, SearchIcon } from './icons'
 
 const FEATURES = [
@@ -32,7 +31,9 @@ export default function Features() {
         <FadeContent duration={600} threshold={0.1}>
           <div className="section-heading">
             <p className="eyebrow">Capabilities</p>
-            <h2 className="section-title">Built for developers who ship</h2>
+            <ScrollReveal as="h2" className="section-title">
+              Built for developers who ship
+            </ScrollReveal>
             <p className="section-subtitle">
               Stop reading every file to find an answer. DevDocs AI turns your repository
               into a living knowledge base.
@@ -48,17 +49,13 @@ export default function Features() {
               threshold={0.15}
               initialScale={0.96}
             >
-              <TiltCard className="feature-tilt" maxTilt={8}>
-                <SpotlightCard className="spotlight-feature">
-                  <div className="feature-card">
-                    <div className="feature-icon" aria-hidden="true">
-                      <feature.icon size={19} />
-                    </div>
-                    <h3 className="feature-title">{feature.title}</h3>
-                    <p className="feature-description">{feature.description}</p>
-                  </div>
-                </SpotlightCard>
-              </TiltCard>
+              <div className="feature-card">
+                <div className="feature-icon" aria-hidden="true">
+                  <feature.icon size={19} />
+                </div>
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-description">{feature.description}</p>
+              </div>
             </FadeContent>
           ))}
         </div>

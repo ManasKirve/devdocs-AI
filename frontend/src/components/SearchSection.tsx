@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import CodeBlock from './CodeBlock'
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
-import SpotlightCard from './bits/SpotlightCard'
+import ScrollReveal from './bits/ScrollReveal'
 import { AlertIcon, ArrowRightIcon, FileIcon, RefreshIcon, SearchIcon } from './icons'
 import { getFriendlyError } from '../services/http'
 import { searchCodebase } from '../services/search'
@@ -26,7 +26,7 @@ function ResultRow({ item, terms }: { item: SearchResultItem; terms: string[] })
   const { directory, basename } = splitPath(item.file_path)
 
   return (
-    <SpotlightCard as="article" className="search-result">
+    <article className="search-result">
       <div className="search-result-head">
         <span className="search-result-file">
           <FileIcon size={14} />
@@ -49,7 +49,7 @@ function ResultRow({ item, terms }: { item: SearchResultItem; terms: string[] })
         showHeader={false}
         compact
       />
-    </SpotlightCard>
+    </article>
   )
 }
 
@@ -130,7 +130,9 @@ export default function SearchSection({ repository }: SearchSectionProps) {
         <FadeContent duration={600} threshold={0.1}>
           <div className="section-heading">
             <p className="eyebrow">Code search</p>
-            <h2 className="section-title">Find code by intent</h2>
+            <ScrollReveal as="h2" className="section-title">
+              Find code by intent
+            </ScrollReveal>
             <p className="section-subtitle">
               Describe what you are looking for. DevDocs AI matches semantically across
               your indexed repository and points you at the exact files and lines.

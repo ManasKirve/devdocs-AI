@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import AnswerContent from './AnswerContent'
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
-import SpotlightCard from './bits/SpotlightCard'
+import ScrollReveal from './bits/ScrollReveal'
 import {
   AlertIcon,
   ArrowRightIcon,
@@ -116,7 +116,9 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
         <FadeContent duration={600} threshold={0.1}>
           <div className="section-heading">
             <p className="eyebrow">Codebase Q&amp;A</p>
-            <h2 className="section-title">Ask your codebase anything</h2>
+            <ScrollReveal as="h2" className="section-title">
+              Ask your codebase anything
+            </ScrollReveal>
             <p className="section-subtitle">
               Answers are generated from your indexed repository and cite the exact file and
               lines they come from.
@@ -246,7 +248,7 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
               )}
 
               {status === 'success' && result && (
-                <SpotlightCard className="answer">
+                <div className="answer">
                   <div className="answer-head">
                     <span className="answer-status-dot" aria-hidden="true" />
                     <span className="answer-name">DevDocs</span>
@@ -284,7 +286,7 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
                       </p>
                     )}
                   </div>
-                </SpotlightCard>
+                </div>
               )}
             </>
           )}

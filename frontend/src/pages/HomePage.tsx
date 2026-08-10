@@ -2,11 +2,13 @@ import { useRef, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import Features from '../components/Features'
+import HowItWorks from '../components/HowItWorks'
 import RepositoryAnalyzer from '../components/RepositoryAnalyzer'
 import SearchSection from '../components/SearchSection'
 import CodebaseQA from '../components/CodebaseQA'
 import Footer from '../components/Footer'
 import OfflineBanner from '../components/OfflineBanner'
+import Noise from '../components/bits/Noise'
 import { useHealth } from '../hooks/useHealth'
 
 export default function HomePage() {
@@ -27,6 +29,7 @@ export default function HomePage() {
 
   return (
     <>
+      <Noise patternAlpha={12} />
       <Navbar
         repository={analyzedRepository}
         backendState={state}
@@ -43,6 +46,7 @@ export default function HomePage() {
       <main>
         <Hero onAnalyzeRequest={handleAnalyzeRequest} />
         <Features />
+        <HowItWorks />
         <div ref={analyzerSectionRef}>
           <RepositoryAnalyzer
             onRepositoryChange={handleRepositoryChange}
