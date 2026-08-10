@@ -126,7 +126,7 @@ export default function SearchSection({ repository }: SearchSectionProps) {
   return (
     <section className="section search" id="search">
       <Container>
-        <FadeContent duration={700} threshold={0.1}>
+        <FadeContent duration={600} threshold={0.1}>
           <div className="section-heading">
             <p className="eyebrow">Code search</p>
             <h2 className="section-title">Find code by intent</h2>
@@ -137,7 +137,7 @@ export default function SearchSection({ repository }: SearchSectionProps) {
           </div>
         </FadeContent>
 
-        <FadeContent duration={800} delay={100} threshold={0.1}>
+        <FadeContent duration={600} delay={120} threshold={0.1}>
           <div className="search-panel">
           <form className="search-form" onSubmit={handleSubmit}>
             <div className="search-input-wrap">
@@ -271,10 +271,9 @@ export default function SearchSection({ repository }: SearchSectionProps) {
                   {result.results.map((item, index) => (
                     <FadeContent
                       key={`${item.file_path}-${item.start_line}-${index}`}
-                      duration={450}
-                      delay={Math.min(index, 6) * 70}
+                      duration={400}
+                      delay={Math.min(index, 6) * 60}
                       threshold={0}
-                      blur
                     >
                       <ResultRow item={item} terms={terms} />
                     </FadeContent>

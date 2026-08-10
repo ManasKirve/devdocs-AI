@@ -10,6 +10,7 @@ interface FadeContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   container?: Element | string | null;
   blur?: boolean;
+  y?: number;
   duration?: number;
   ease?: string;
   delay?: number;
@@ -26,7 +27,8 @@ const FadeContent: React.FC<FadeContentProps> = ({
   children,
   container,
   blur = false,
-  duration = 1000,
+  y = 14,
+  duration = 600,
   ease = 'power2.out',
   delay = 0,
   threshold = 0.1,
@@ -48,7 +50,7 @@ const FadeContent: React.FC<FadeContentProps> = ({
     if (!el) return;
 
     if (prefersReducedMotion) {
-      gsap.set(el, { autoAlpha: 1, filter: 'blur(0px)' });
+      gsap.set(el, { autoAlpha: 1, y: 0, filter: 'blur(0px)' });
       return;
     }
 
@@ -63,8 +65,9 @@ const FadeContent: React.FC<FadeContentProps> = ({
 
     gsap.set(el, {
       autoAlpha: initialOpacity,
+      y,
       filter: blur ? 'blur(10px)' : 'blur(0px)',
-      willChange: 'opacity, filter, transform'
+      willChange: 'opacity, transform'
     });
 
     const tl = gsap.timeline({
@@ -75,6 +78,7 @@ const FadeContent: React.FC<FadeContentProps> = ({
         if (disappearAfter > 0) {
           gsap.to(el, {
             autoAlpha: initialOpacity,
+            y,
             filter: blur ? 'blur(10px)' : 'blur(0px)',
             delay: getSeconds(disappearAfter),
             duration: getSeconds(disappearDuration),
@@ -87,6 +91,7 @@ const FadeContent: React.FC<FadeContentProps> = ({
 
     tl.to(el, {
       autoAlpha: 1,
+      y: 0,
       filter: 'blur(0px)',
       duration: getSeconds(duration),
       ease: ease

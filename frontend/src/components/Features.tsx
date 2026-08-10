@@ -1,6 +1,5 @@
 import Container from './Container'
 import FadeContent from './bits/FadeContent'
-import SpotlightCard from './bits/SpotlightCard'
 import { BookIcon, CodeIcon, SearchIcon } from './icons'
 
 const FEATURES = [
@@ -28,7 +27,7 @@ export default function Features() {
   return (
     <section className="section features" id="features">
       <Container>
-        <FadeContent duration={700} threshold={0.1}>
+        <FadeContent duration={600} threshold={0.1}>
           <div className="section-heading">
             <p className="eyebrow">Capabilities</p>
             <h2 className="section-title">Built for developers who ship</h2>
@@ -40,14 +39,14 @@ export default function Features() {
         </FadeContent>
         <div className="features-grid">
           {FEATURES.map((feature, index) => (
-            <FadeContent key={feature.title} duration={550} delay={index * 90} threshold={0.15}>
-              <SpotlightCard className="feature-card">
+            <FadeContent key={feature.title} duration={500} delay={index * 80} threshold={0.15}>
+              <div className="feature-card">
                 <div className="feature-icon" aria-hidden="true">
                   <feature.icon size={19} />
                 </div>
                 <h3 className="feature-title">{feature.title}</h3>
                 <p className="feature-description">{feature.description}</p>
-              </SpotlightCard>
+              </div>
             </FadeContent>
           ))}
         </div>

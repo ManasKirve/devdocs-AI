@@ -4,7 +4,6 @@ import FadeContent from './bits/FadeContent'
 import {
   AlertIcon,
   ArrowRightIcon,
-  CheckIcon,
   GitHubIcon,
   MessagesIcon,
   RefreshIcon,
@@ -15,7 +14,6 @@ import type { IngestResponse } from '../types/repositories'
 import { formatCount } from '../lib/format'
 
 const PLACEHOLDER_URL = 'github.com/owner/repository'
-const STEP_INTERVAL_MS = 850
 
 const EXAMPLE_REPOS = ['fastapi/fastapi', 'pallets/flask', 'golang/go']
 
@@ -56,27 +54,12 @@ export default function RepositoryAnalyzer({
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState('')
   const [result, setResult] = useState<IngestResponse | null>(null)
-  const [activeStep, setActiveStep] = useState(0)
   const [submittedUrl, setSubmittedUrl] = useState('')
-  const startedAtRef = useRef(0)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (initialUrl) setUrl(initialUrl)
   }, [initialUrl])
-
-  useEffect(() => {
-    if (status !== 'analyzing') return
-    startedAtRef.current = Date.now()
-    const intervalId = window.setInterval(() => {
-      const elapsed = Date.now() - startedAtRef.current
-      setActiveStep(
-        Math.min(Math.floor(elapsed / STEP_INTERVAL_MS), STEPS.length - 1),
-      )
-    }, 250)
-
-    return () => window.clearInterval(intervalId)
-  }, [status])
 
   const isAnalyzing = status === 'analyzing'
   const dirty = url.trim().length > 0
@@ -95,13 +78,11 @@ export default function RepositoryAnalyzer({
     setError('')
     setResult(null)
     setSubmittedUrl(target)
-    setActiveStep(0)
     onRepositoryChange?.(null)
 
     try {
       const data = await ingestRepository(target)
       setResult(data)
-      setActiveStep(STEPS.length - 1)
       setStatus('completed')
       onRepositoryChange?.(data.repository)
     } catch (err) {
@@ -152,7 +133,7 @@ export default function RepositoryAnalyzer({
     <section className="section analyzer" id="analyze">
       <Container>
         <div className="analyzer-grid">
-          <FadeContent duration={700} threshold={0.15}>
+          <FadeContent duration={600} threshold={0.15}>
             <div className="analyzer-copy">
               <p className="eyebrow">Get started</p>
               <h2 className="section-title">Analyze a repository</h2>
@@ -173,7 +154,7 @@ export default function RepositoryAnalyzer({
             </div>
           </FadeContent>
 
-          <FadeContent duration={700} delay={120} threshold={0.15}>
+          <FadeContent duration={600} delay={140} threshold={0.15}>
             <form className="analyzer-form" onSubmit={handleSubmit}>
             <label className="field-label" htmlFor="repository-url">
               GitHub repository URL
@@ -244,19 +225,15 @@ export default function RepositoryAnalyzer({
 
             {isAnalyzing && (
               <div className="analyzer-track" aria-hidden="true">
-                <span
-                  className="analyzer-track-bar"
-                  style={{ width: `${((activeStep + 1) / STEPS.length) * 100}%` }}
-                />
+                <span className="analyzer-track-bar" />
               </div>
             )}
 
             {isAnalyzing && (
-              <FadeContent duration={450} blur threshold={0}>
+              <FadeContent duration={250} threshold={0}>
                 <div className="progress" role="status" aria-live="polite">
                 {STEPS.map((step, index) => {
-                  const stepState =
-                    index < activeStep ? 'done' : index === activeStep ? 'active' : 'pending'
+                  const stepState = index === 0 ? 'active' : 'pending'
                   const detail =
                     index === 0 && submittedUrl
                       ? `cloning ${submittedUrl}`
@@ -264,9 +241,7 @@ export default function RepositoryAnalyzer({
                   return (
                     <div className={`progress-step is-${stepState}`} key={step.label}>
                       <span className="progress-step-icon" aria-hidden="true">
-                        {stepState === 'done' ? (
-                          <CheckIcon size={12} />
-                        ) : stepState === 'active' ? (
+                        {stepState === 'active' ? (
                           <span className="progress-step-ring" />
                         ) : (
                           <span className="progress-step-dot" />
@@ -306,7 +281,7 @@ export default function RepositoryAnalyzer({
             )}
 
             {status === 'completed' && result && (
-              <FadeContent duration={550} blur threshold={0}>
+              <FadeContent duration={450} threshold={0}>
                 <div className="result-card" role="status">
                 <div className="result-identity">
                   <span className="result-status-dot" aria-hidden="true" />

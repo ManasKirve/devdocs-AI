@@ -112,7 +112,7 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
   return (
     <section className="section qa" id="qa">
       <Container>
-        <FadeContent duration={700} threshold={0.1}>
+        <FadeContent duration={600} threshold={0.1}>
           <div className="section-heading">
             <p className="eyebrow">Codebase Q&amp;A</p>
             <h2 className="section-title">Ask your codebase anything</h2>
@@ -123,7 +123,7 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
           </div>
         </FadeContent>
 
-        <FadeContent duration={800} delay={100} threshold={0.1}>
+        <FadeContent duration={600} delay={120} threshold={0.1}>
           <div className="qa-panel">
           <div className="qa-toolbar" role="status">
             <span className={`qa-toolbar-dot${repository ? '' : ' idle'}`} aria-hidden="true" />
@@ -211,7 +211,7 @@ export default function CodebaseQA({ repository }: CodebaseQAProps) {
               </form>
 
               {isLoading && (
-                <FadeContent duration={300} threshold={0} blur>
+                <FadeContent duration={240} threshold={0}>
                   <div className="thinking" role="status" aria-live="polite">
                     <span className="thinking-dots" aria-hidden="true">
                       <span />

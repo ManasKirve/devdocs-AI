@@ -1,8 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import { gsap } from 'gsap'
+import { useEffect, useState } from 'react'
 import type { BackendState } from '../hooks/useHealth'
 import type { HealthResponse } from '../types/health'
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import BackendStatus from './BackendStatus'
 import Container from './Container'
 import Logo from './Logo'
@@ -27,10 +25,6 @@ export default function Navbar({ repository = null, backendState, health }: Navb
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
-  const listRef = useRef<HTMLUListElement>(null)
-  const indicatorRef = useRef<HTMLSpanElement>(null)
-  const linkRefs = useRef<Map<string, HTMLAnchorElement>>(new Map())
-  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > SCROLL_EDGE_PX)
@@ -56,35 +50,6 @@ export default function Navbar({ repository = null, backendState, health }: Navb
     return () => observer.disconnect()
   }, [])
 
-  useEffect(() => {
-    const indicator = indicatorRef.current
-    const list = listRef.current
-    if (!indicator || !list) return
-
-    const positionIndicator = () => {
-      const activeLink = activeId ? linkRefs.current.get(activeId) : null
-      if (!activeLink) {
-        const vars = { autoAlpha: 0 }
-        if (prefersReducedMotion) gsap.set(indicator, vars)
-        else gsap.to(indicator, { ...vars, duration: 0.25, ease: 'power2.out' })
-        return
-      }
-      const listRect = list.getBoundingClientRect()
-      const linkRect = activeLink.getBoundingClientRect()
-      const vars = {
-        left: linkRect.left - listRect.left,
-        width: linkRect.width,
-        autoAlpha: 1,
-      }
-      if (prefersReducedMotion) gsap.set(indicator, vars)
-      else gsap.to(indicator, { ...vars, duration: 0.4, ease: 'power3.out' })
-    }
-
-    positionIndicator()
-    window.addEventListener('resize', positionIndicator)
-    return () => window.removeEventListener('resize', positionIndicator)
-  }, [activeId, prefersReducedMotion])
-
   function closeMenu() {
     setOpen(false)
   }
@@ -97,21 +62,12 @@ export default function Navbar({ repository = null, backendState, health }: Navb
             <Logo />
           </a>
 
-          <ul ref={listRef} className={`navbar-links${open ? ' is-open' : ''}`}>
-            <span
-              ref={indicatorRef}
-              className="navbar-link-indicator"
-              aria-hidden="true"
-            />
+          <ul className={`navbar-links${open ? ' is-open' : ''}`}>
             {NAV_LINKS.map((link) => {
               const id = link.href.replace('#', '')
               return (
                 <li key={link.href}>
                   <a
-                    ref={(node) => {
-                      if (node) linkRefs.current.set(id, node)
-                      else linkRefs.current.delete(id)
-                    }}
                     className={`navbar-link${activeId === id ? ' is-active' : ''}`}
                     href={link.href}
                     onClick={closeMenu}
