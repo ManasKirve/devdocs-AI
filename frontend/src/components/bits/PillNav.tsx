@@ -5,7 +5,6 @@ import {
   type CSSProperties,
 } from 'react'
 import { gsap } from 'gsap'
-import { Link } from 'react-router-dom'
 
 interface PillNavItem {
   label: string
@@ -48,9 +47,7 @@ const PillNav = ({
 
   const circleRefs = useRef<(HTMLSpanElement | null)[]>([])
   const tlRefs = useRef<gsap.core.Timeline[]>([])
-  const activeTweenRefs = useRef<
-    (gsap.core.Tween | null)[]
-  >([])
+  const activeTweenRefs = useRef<(gsap.core.Tween | null)[]>([])
   const logoImgRef = useRef<HTMLImageElement | null>(null)
   const logoTweenRef = useRef<gsap.core.Tween | null>(null)
   const hamburgerRef = useRef<HTMLButtonElement | null>(null)
@@ -67,6 +64,8 @@ const PillNav = ({
         const rect = pill.getBoundingClientRect()
 
         const { width: w, height: h } = rect
+
+        if (w === 0 || h === 0) return
 
         const R =
           ((w * w) / 4 + h * h) /
@@ -267,11 +266,14 @@ const PillNav = ({
     activeTweenRefs.current[index]?.kill()
 
     activeTweenRefs.current[index] =
-      tl.tweenTo(tl.duration(), {
-        duration: 0.3,
-        ease,
-        overwrite: 'auto',
-      })
+      tl.tweenTo(
+        tl.duration(),
+        {
+          duration: 0.3,
+          ease,
+          overwrite: 'auto',
+        }
+      )
   }
 
   const handleLeave = (index: number) => {
@@ -282,11 +284,14 @@ const PillNav = ({
     activeTweenRefs.current[index]?.kill()
 
     activeTweenRefs.current[index] =
-      tl.tweenTo(0, {
-        duration: 0.2,
-        ease,
-        overwrite: 'auto',
-      })
+      tl.tweenTo(
+        0,
+        {
+          duration: 0.2,
+          ease,
+          overwrite: 'auto',
+        }
+      )
   }
 
   const handleLogoEnter = () => {
@@ -300,12 +305,15 @@ const PillNav = ({
       rotate: 0,
     })
 
-    logoTweenRef.current = gsap.to(img, {
-      rotate: 360,
-      duration: 0.2,
-      ease,
-      overwrite: 'auto',
-    })
+    logoTweenRef.current = gsap.to(
+      img,
+      {
+        rotate: 360,
+        duration: 0.2,
+        ease,
+        overwrite: 'auto',
+      }
+    )
   }
 
   const toggleMobileMenu = () => {
@@ -381,41 +389,29 @@ const PillNav = ({
           }
         )
       } else {
-        gsap.to(menu, {
-          opacity: 0,
-          y: 10,
-          scaleY: 1,
-          duration: 0.2,
-          ease,
-          transformOrigin:
-            'top center',
-          onComplete: () => {
-            gsap.set(menu, {
-              visibility: 'hidden',
-            })
-          },
-        })
+        gsap.to(
+          menu,
+          {
+            opacity: 0,
+            y: 10,
+            scaleY: 1,
+            duration: 0.2,
+            ease,
+            transformOrigin:
+              'top center',
+            onComplete: () => {
+              gsap.set(menu, {
+                visibility:
+                  'hidden',
+              })
+            },
+          }
+        )
       }
     }
 
     onMobileMenuClick?.()
   }
-
-  const isExternalLink = (
-    href: string
-  ) =>
-    href.startsWith('http://') ||
-    href.startsWith('https://') ||
-    href.startsWith('//') ||
-    href.startsWith('mailto:') ||
-    href.startsWith('tel:') ||
-    href.startsWith('#')
-
-  const isRouterLink = (
-    href: string
-  ) =>
-    Boolean(href) &&
-    !isExternalLink(href)
 
   const cssVars = {
     '--base': baseColor,
@@ -692,43 +688,23 @@ const PillNav = ({
           aria-label="Primary"
           style={cssVars}
         >
-          {isRouterLink(
-            items?.[0]?.href
-          ) ? (
-            <Link
-              className="pill-logo"
-              to={items[0].href}
-              aria-label="Home"
-              onMouseEnter={
-                handleLogoEnter
-              }
-              ref={logoRef}
-            >
-              <img
-                src={logo}
-                alt={logoAlt}
-                ref={logoImgRef}
-              />
-            </Link>
-          ) : (
-            <a
-              className="pill-logo"
-              href={
-                items?.[0]?.href || '#'
-              }
-              aria-label="Home"
-              onMouseEnter={
-                handleLogoEnter
-              }
-              ref={logoRef}
-            >
-              <img
-                src={logo}
-                alt={logoAlt}
-                ref={logoImgRef}
-              />
-            </a>
-          )}
+          <a
+            className="pill-logo"
+            href={
+              items?.[0]?.href || '#'
+            }
+            aria-label="Home"
+            onMouseEnter={
+              handleLogoEnter
+            }
+            ref={logoRef}
+          >
+            <img
+              src={logo}
+              alt={logoAlt}
+              ref={logoImgRef}
+            />
+          </a>
 
           <div
             className="pill-nav-items desktop-only"
@@ -747,105 +723,53 @@ const PillNav = ({
                     }
                     role="none"
                   >
-                    {isRouterLink(
-                      item.href
-                    ) ? (
-                      <Link
-                        role="menuitem"
-                        to={item.href}
-                        className={`pill${
-                          activeHref ===
-                          item.href
-                            ? ' is-active'
-                            : ''
-                        }`}
-                        aria-label={
-                          item.ariaLabel ||
-                          item.label
-                        }
-                        onMouseEnter={() =>
-                          handleEnter(
+                    <a
+                      role="menuitem"
+                      href={item.href}
+                      className={`pill${
+                        activeHref ===
+                        item.href
+                          ? ' is-active'
+                          : ''
+                      }`}
+                      aria-label={
+                        item.ariaLabel ||
+                        item.label
+                      }
+                      onMouseEnter={() =>
+                        handleEnter(
+                          index
+                        )
+                      }
+                      onMouseLeave={() =>
+                        handleLeave(
+                          index
+                        )
+                      }
+                    >
+                      <span
+                        className="hover-circle"
+                        aria-hidden="true"
+                        ref={(element) => {
+                          circleRefs.current[
                             index
-                          )
-                        }
-                        onMouseLeave={() =>
-                          handleLeave(
-                            index
-                          )
-                        }
-                      >
-                        <span
-                          className="hover-circle"
-                          aria-hidden="true"
-                          ref={(element) => {
-                            circleRefs.current[
-                              index
-                            ] = element
-                          }}
-                        />
+                          ] = element
+                        }}
+                      />
 
-                        <span className="label-stack">
-                          <span className="pill-label">
-                            {item.label}
-                          </span>
-
-                          <span
-                            className="pill-label-hover"
-                            aria-hidden="true"
-                          >
-                            {item.label}
-                          </span>
+                      <span className="label-stack">
+                        <span className="pill-label">
+                          {item.label}
                         </span>
-                      </Link>
-                    ) : (
-                      <a
-                        role="menuitem"
-                        href={item.href}
-                        className={`pill${
-                          activeHref ===
-                          item.href
-                            ? ' is-active'
-                            : ''
-                        }`}
-                        aria-label={
-                          item.ariaLabel ||
-                          item.label
-                        }
-                        onMouseEnter={() =>
-                          handleEnter(
-                            index
-                          )
-                        }
-                        onMouseLeave={() =>
-                          handleLeave(
-                            index
-                          )
-                        }
-                      >
+
                         <span
-                          className="hover-circle"
+                          className="pill-label-hover"
                           aria-hidden="true"
-                          ref={(element) => {
-                            circleRefs.current[
-                              index
-                            ] = element
-                          }}
-                        />
-
-                        <span className="label-stack">
-                          <span className="pill-label">
-                            {item.label}
-                          </span>
-
-                          <span
-                            className="pill-label-hover"
-                            aria-hidden="true"
-                          >
-                            {item.label}
-                          </span>
+                        >
+                          {item.label}
                         </span>
-                      </a>
-                    )}
+                      </span>
+                    </a>
                   </li>
                 )
               )}
@@ -883,43 +807,22 @@ const PillNav = ({
                     `mobile-item-${index}`
                   }
                 >
-                  {isRouterLink(
-                    item.href
-                  ) ? (
-                    <Link
-                      to={item.href}
-                      className={`mobile-menu-link${
-                        activeHref ===
-                        item.href
-                          ? ' is-active'
-                          : ''
-                      }`}
-                      onClick={() => {
-                        setIsMobileMenuOpen(
-                          false
-                        )
-                      }}
-                    >
-                      {item.label}
-                    </Link>
-                  ) : (
-                    <a
-                      href={item.href}
-                      className={`mobile-menu-link${
-                        activeHref ===
-                        item.href
-                          ? ' is-active'
-                          : ''
-                      }`}
-                      onClick={() => {
-                        setIsMobileMenuOpen(
-                          false
-                        )
-                      }}
-                    >
-                      {item.label}
-                    </a>
-                  )}
+                  <a
+                    href={item.href}
+                    className={`mobile-menu-link${
+                      activeHref ===
+                      item.href
+                        ? ' is-active'
+                        : ''
+                    }`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(
+                        false
+                      )
+                    }}
+                  >
+                    {item.label}
+                  </a>
                 </li>
               )
             )}

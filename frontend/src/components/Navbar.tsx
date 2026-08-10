@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { BackendState } from '../hooks/useHealth'
 import type { HealthResponse } from '../types/health'
 import BackendStatus from './BackendStatus'
+import PillNav from './bits/PillNav'
 import Container from './Container'
 import { GitHubIcon } from './icons'
 
@@ -31,16 +32,20 @@ export default function Navbar({
 }: NavbarProps) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [activeId, setActiveId] = useState<string | null>(null)
+  const [activeId, setActiveId] =
+    useState<string | null>(null)
 
-  const headerRef = useRef<HTMLElement | null>(null)
+  const headerRef =
+    useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const header = headerRef.current
 
     if (!header) return
 
-    setScrolled(window.scrollY > SCROLL_EDGE_PX)
+    setScrolled(
+      window.scrollY > SCROLL_EDGE_PX
+    )
 
     const st = ScrollTrigger.create({
       start: SCROLL_EDGE_PX,
@@ -57,8 +62,12 @@ export default function Navbar({
 
   useEffect(() => {
     const sections = NAV_LINKS
-      .map((link) => link.href.replace('#', ''))
-      .map((id) => document.getElementById(id))
+      .map((link) =>
+        link.href.replace('#', '')
+      )
+      .map((id) =>
+        document.getElementById(id)
+      )
       .filter(
         (el): el is HTMLElement =>
           el !== null
@@ -66,42 +75,53 @@ export default function Navbar({
 
     if (sections.length === 0) return
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id)
+    const observer =
+      new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              setActiveId(
+                entry.target.id
+              )
+            }
           }
+        },
+        {
+          rootMargin:
+            '-35% 0px -55% 0px',
+          threshold: 0,
         }
-      },
-      {
-        rootMargin: '-35% 0px -55% 0px',
-        threshold: 0,
-      }
-    )
+      )
 
     for (const section of sections) {
       observer.observe(section)
     }
 
-    return () => {
+    return () =>
       observer.disconnect()
-    }
   }, [])
 
   useEffect(() => {
     if (!open) return
 
-    function onKeyDown(event: KeyboardEvent) {
+    function onKeyDown(
+      event: KeyboardEvent
+    ) {
       if (event.key === 'Escape') {
         setOpen(false)
       }
     }
 
-    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener(
+      'keydown',
+      onKeyDown
+    )
 
     return () => {
-      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener(
+        'keydown',
+        onKeyDown
+      )
     }
   }, [open])
 
@@ -112,44 +132,36 @@ export default function Navbar({
   return (
     <header
       ref={headerRef}
-      className={`navbar${scrolled ? ' is-scrolled' : ''}`}
+      className={`navbar${
+        scrolled
+          ? ' is-scrolled'
+          : ''
+      }`}
     >
       <Container>
-        <nav className="navbar-inner">
-          <a
-            href="/"
-            className="navbar-logo"
-            aria-label="DevDocs home"
-          >
-            <img
-              src="/logo.svg"
-              alt="DevDocs"
-              className="navbar-logo-image"
-            />
-          </a>
-
-          <div className="navbar-nav">
-            {NAV_LINKS.map((link) => {
-              const id = link.href.replace('#', '')
-              const isCurrent = activeId === id
-
-              return (
-                <a
-                  key={link.href}
-                  className={`navbar-link${
-                    isCurrent ? ' is-active' : ''
-                  }`}
-                  href={link.href}
-                  aria-current={
-                    isCurrent ? 'true' : undefined
-                  }
-                  onClick={closeMenu}
-                >
-                  {link.label}
-                </a>
-              )
-            })}
-          </div>
+        <nav
+          className="navbar-inner"
+          aria-label="Primary"
+        >
+          <PillNav
+            logo="/logo.svg"
+            logoAlt="DevDocs"
+            items={NAV_LINKS}
+            activeHref={
+              activeId
+                ? `#${activeId}`
+                : undefined
+            }
+            className="custom-nav"
+            ease="power2.easeOut"
+            baseColor="#000000"
+            pillColor="#ffffff"
+            hoveredPillTextColor="#ffffff"
+            pillTextColor="#000000"
+            onMobileMenuClick={() => {
+              setOpen((value) => !value)
+            }}
+          />
 
           <div className="navbar-actions">
             {repository && (
@@ -193,7 +205,9 @@ export default function Navbar({
             <button
               type="button"
               className={`navbar-toggle${
-                open ? ' is-open' : ''
+                open
+                  ? ' is-open'
+                  : ''
               }`}
               aria-label={
                 open
@@ -203,7 +217,9 @@ export default function Navbar({
               aria-expanded={open}
               aria-controls="navbar-menu"
               onClick={() =>
-                setOpen((value) => !value)
+                setOpen(
+                  (value) => !value
+                )
               }
             >
               <span className="navbar-toggle-bar" />
@@ -215,35 +231,51 @@ export default function Navbar({
           <ul
             id="navbar-menu"
             className={`navbar-links${
-              open ? ' is-open' : ''
+              open
+                ? ' is-open'
+                : ''
             }`}
             aria-label="Primary"
           >
-            {NAV_LINKS.map((link) => {
-              const id = link.href.replace('#', '')
-              const isCurrent = activeId === id
+            {NAV_LINKS.map(
+              (link) => {
+                const id =
+                  link.href.replace(
+                    '#',
+                    ''
+                  )
 
-              return (
-                <li key={link.href}>
-                  <a
-                    className={`navbar-link${
-                      isCurrent
-                        ? ' is-active'
-                        : ''
-                    }`}
-                    href={link.href}
-                    aria-current={
-                      isCurrent
-                        ? 'true'
-                        : undefined
-                    }
-                    onClick={closeMenu}
+                const isCurrent =
+                  activeId === id
+
+                return (
+                  <li
+                    key={link.href}
                   >
-                    {link.label}
-                  </a>
-                </li>
-              )
-            })}
+                    <a
+                      className={`navbar-link${
+                        isCurrent
+                          ? ' is-active'
+                          : ''
+                      }`}
+                      href={
+                        link.href
+                      }
+                      aria-current={
+                        isCurrent
+                          ? 'true'
+                          : undefined
+                      }
+                      onClick={
+                        closeMenu
+                      }
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                )
+              }
+            )}
 
             <li className="navbar-links-github">
               <a
@@ -261,7 +293,9 @@ export default function Navbar({
               <a
                 className="btn btn-primary btn-sm btn-block"
                 href="#analyze"
-                onClick={closeMenu}
+                onClick={
+                  closeMenu
+                }
               >
                 Analyze repository
               </a>
