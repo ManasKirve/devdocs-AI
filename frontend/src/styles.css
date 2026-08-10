@@ -1907,6 +1907,28 @@ code {
   opacity: 0.55;
 }
 
+.hero-title-line {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+.hero-rotating-text {
+  display: inline-flex !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+}
+
+.hero-rotating-word {
+  overflow: hidden !important;
+}
+
+.hero-title-static {
+  display: block !important;
+}
+
 /* indeterminate progress rail — communicates activity, never fabricated counts */
 .analyzer-track {
   position: relative;

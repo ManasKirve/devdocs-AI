@@ -6,7 +6,6 @@ import FadeContent from './bits/FadeContent'
 import SplitText from './bits/SplitText'
 import TextType from './bits/TextType'
 import RotatingText from './bits/RotatingText'
-import TrueFocus from './bits/TrueFocus'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import {
   ArrowRightIcon,
@@ -20,8 +19,6 @@ gsap.registerPlugin(ScrollTrigger)
 interface HeroProps {
   onAnalyzeRequest: (url: string) => void
 }
-
-const HERO_TITLE = 'Understand any codebase with sources.'
 
 const VALUE_STEPS = [
   {
@@ -118,34 +115,50 @@ export default function Hero({
     onAnalyzeRequest(target)
   }
 
-  /*
-   * TRUE FOCUS TITLE
-   *
-   * TrueFocus is intentionally rendered directly here.
-   * We are NOT using prefersReducedMotion for the title,
-   * because that was preventing TrueFocus from rendering.
-   */
-  const title = (
-    <div className="hero-title">
-      <TrueFocus
-        sentence={HERO_TITLE}
-        separator=" "
-        manualMode={false}
-        blurAmount={5}
-        borderColor="#7c3aed"
-        glowColor="rgba(124, 58, 237, 0.6)"
-        animationDuration={0.5}
-        pauseBetweenAnimations={1}
-      />
-    </div>
-  )
-
   return (
     <section className="hero">
       <Container>
         <div className="hero-content">
 
-          {title}
+          {/* HERO TITLE */}
+          <div className="hero-title">
+
+            <div className="hero-title-line">
+              <RotatingText
+                texts={[
+                  'Understand any codebase',
+                  'Search any codebase',
+                  'Explore any codebase',
+                  'Query any codebase',
+                ]}
+                mainClassName="hero-rotating-text"
+                splitBy="words"
+                staggerFrom="last"
+                initial={{
+                  y: '100%',
+                }}
+                animate={{
+                  y: 0,
+                }}
+                exit={{
+                  y: '-120%',
+                }}
+                staggerDuration={0.025}
+                splitLevelClassName="hero-rotating-word"
+                transition={{
+                  type: 'spring',
+                  damping: 30,
+                  stiffness: 400,
+                }}
+                rotationInterval={2500}
+              />
+            </div>
+
+            <div className="hero-title-static">
+              with sources.
+            </div>
+
+          </div>
 
           <FadeContent
             duration={400}
@@ -202,33 +215,34 @@ export default function Hero({
           <div className="hero-hint">
             <span className="hero-hint-item">
               <GitHubIcon size={13} />
-
               Public repositories only
             </span>
           </div>
 
           <div className="hero-values">
-            {VALUE_STEPS.map((step, index) => (
-              <div
-                className="hero-value"
-                key={step.label}
-              >
-                <span
-                  className="hero-value-index"
-                  aria-hidden="true"
+            {VALUE_STEPS.map(
+              (step, index) => (
+                <div
+                  className="hero-value"
+                  key={step.label}
                 >
-                  0{index + 1}
-                </span>
+                  <span
+                    className="hero-value-index"
+                    aria-hidden="true"
+                  >
+                    0{index + 1}
+                  </span>
 
-                <span className="hero-value-label">
-                  {step.label}
-                </span>
+                  <span className="hero-value-label">
+                    {step.label}
+                  </span>
 
-                <span className="hero-value-desc">
-                  {step.description}
-                </span>
-              </div>
-            ))}
+                  <span className="hero-value-desc">
+                    {step.description}
+                  </span>
+                </div>
+              )
+            )}
           </div>
 
           <div
@@ -269,7 +283,8 @@ export default function Hero({
                           ? ' is-dir'
                           : ''
                       }${
-                        'active' in row && row.active
+                        'active' in row &&
+                        row.active
                           ? ' is-active'
                           : ''
                       }`}
@@ -296,7 +311,9 @@ export default function Hero({
                   {MOCK_CODE.map((row) => (
                     <div
                       className={`mock-code-line${
-                        row.hit ? ' is-hit' : ''
+                        row.hit
+                          ? ' is-hit'
+                          : ''
                       }`}
                       key={row.line}
                     >
@@ -304,7 +321,9 @@ export default function Hero({
                         {row.line}
                       </span>
 
-                      <span>{row.text}</span>
+                      <span>
+                        {row.text}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -333,9 +352,14 @@ export default function Hero({
                       src/services/auth.py
                     </strong>{' '}
                     —{' '}
-                    <code>authenticate()</code>{' '}
-                    extracts the token and calls{' '}
-                    <code>verify_token()</code>.
+                    <code>
+                      authenticate()
+                    </code>{' '}
+                    extracts the token and
+                    calls{' '}
+                    <code>
+                      verify_token()
+                    </code>.
                   </div>
 
                   <div className="mock-source">
