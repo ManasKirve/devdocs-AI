@@ -21,7 +21,7 @@ interface HeroProps {
   onAnalyzeRequest: (url: string) => void
 }
 
-const HERO_TITLE = 'Understand any codebase with sources.'
+const HERO_TITLE = 'Understand any codebase.'
 
 const VALUE_STEPS = [
   {
