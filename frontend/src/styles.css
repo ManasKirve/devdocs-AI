@@ -633,12 +633,16 @@ code {
   color: var(--accent-text);
 }
 
-/* desktop center — the GooeyNav liquid indicator (see below) lives here */
+/* desktop navigation — plain text links at the left of the bar (no brand) */
 .navbar-nav {
   flex: 1;
   min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: var(--space-1);
 }
 
 .navbar-links {
@@ -3274,13 +3278,9 @@ code {
   }
 }
 
-/* mid desktop — keep the centered GooeyNav uncluttered; repo chip is
+/* mid desktop — nav links and actions share the bar; the repo chip is
    auxiliary, drop it before the bar gets tight */
 @media (max-width: 1240px) {
-  .gooey-nav a {
-    padding: 7px 10px;
-  }
-
   .navbar-actions {
     gap: 8px;
   }

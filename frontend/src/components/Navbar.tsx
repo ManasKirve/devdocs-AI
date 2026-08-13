@@ -4,7 +4,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import type { BackendState } from '../hooks/useHealth'
 import type { HealthResponse } from '../types/health'
 import BackendStatus from './BackendStatus'
-import PillNav from './bits/PillNav'
 import Container from './Container'
 import { GitHubIcon } from './icons'
 
@@ -143,25 +142,47 @@ export default function Navbar({
           className="navbar-inner"
           aria-label="Primary"
         >
-          <PillNav
-            logo="/logo.svg"
-            logoAlt="DevDocs"
-            items={NAV_LINKS}
-            activeHref={
-              activeId
-                ? `#${activeId}`
-                : undefined
-            }
-            className="custom-nav"
-            ease="power2.easeOut"
-            baseColor="#000000"
-            pillColor="#ffffff"
-            hoveredPillTextColor="#ffffff"
-            pillTextColor="#000000"
-            onMobileMenuClick={() => {
-              setOpen((value) => !value)
-            }}
-          />
+          <ul
+            className="navbar-nav"
+            aria-label="Primary"
+          >
+            {NAV_LINKS.map(
+              (link) => {
+                const id =
+                  link.href.replace(
+                    '#',
+                    ''
+                  )
+
+                const isCurrent =
+                  activeId === id
+
+                return (
+                  <li
+                    key={link.href}
+                  >
+                    <a
+                      className={`navbar-link${
+                        isCurrent
+                          ? ' is-active'
+                          : ''
+                      }`}
+                      href={
+                        link.href
+                      }
+                      aria-current={
+                        isCurrent
+                          ? 'true'
+                          : undefined
+                      }
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                )
+              }
+            )}
+          </ul>
 
           <div className="navbar-actions">
             {repository && (
