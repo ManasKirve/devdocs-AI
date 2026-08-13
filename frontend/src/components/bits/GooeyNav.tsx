@@ -151,28 +151,155 @@ export default function GooeyNav({
   }
 
   return (
-    <div
-      ref={containerRef}
-      className={`gooey-nav${isReady ? ' is-ready' : ''}${className ? ` ${className}` : ''}`}
-    >
-      <ul data-gooey="true" aria-label="Primary">
-        {items.map((item, index) => {
-          const isActive = index === currentIndex
-          return (
-            <li key={item.href} data-index={index} className={isActive ? 'is-active' : ''}>
-              <a
-                href={item.href}
-                aria-current={isActive ? 'true' : undefined}
-                onClick={(event) => handleClick(event, item.href, index)}
-                onKeyDown={(event) => handleKeyDown(event, item.href, index)}
-              >
-                {item.label}
-              </a>
-            </li>
-          )
-        })}
-      </ul>
-      <span className="gooey-nav-effect" aria-hidden="true" />
-    </div>
+    <>
+      <style>{`
+        .gooey-nav {
+          --linear-ease: cubic-bezier(0.22, 1, 0.36, 1);
+          --color-1: var(--accent);
+          --color-2: var(--accent-hover);
+          --gooey-blur: 8px;
+          --gooey-contrast: 2.4;
+          position: relative;
+          display: inline-flex;
+        }
+
+        .gooey-nav ul {
+          display: flex;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          position: relative;
+          z-index: 3;
+        }
+
+        .gooey-nav li {
+          position: relative;
+          flex-shrink: 0;
+        }
+
+        .gooey-nav li.is-active a {
+          color: var(--text-on-accent);
+          font-weight: 600;
+        }
+
+        .gooey-nav a {
+          display: inline-block;
+          padding: 7px 14px;
+          border-radius: var(--radius-full);
+          font-size: var(--text-sm);
+          font-weight: 500;
+          color: var(--text-secondary);
+          outline: none;
+          transition: color var(--duration-fast) var(--ease-default);
+        }
+
+        .gooey-nav a:hover {
+          color: var(--text-primary);
+        }
+
+        .gooey-nav a:focus-visible {
+          box-shadow: var(--focus-ring);
+        }
+
+        .gooey-nav-effect {
+          position: absolute;
+          z-index: 0;
+          pointer-events: none;
+          opacity: 0;
+          filter: blur(var(--gooey-blur)) contrast(var(--gooey-contrast));
+          mix-blend-mode: lighten;
+          transition: opacity var(--duration-base) var(--ease-default);
+        }
+
+        .gooey-nav.is-ready .gooey-nav-effect {
+          opacity: 1;
+          transition:
+            left 320ms var(--linear-ease),
+            top 320ms var(--linear-ease),
+            width 320ms var(--linear-ease),
+            height 320ms var(--linear-ease),
+            opacity var(--duration-base) var(--ease-default);
+        }
+
+        .gooey-nav-effect::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          z-index: -2;
+          background: #000;
+        }
+
+        .gooey-nav-effect::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          z-index: -1;
+          border-radius: var(--radius-full);
+          background: var(--accent);
+        }
+
+        .gooey-nav-effect.is-active::after {
+          animation: gooey-pill 380ms var(--linear-ease) forwards;
+        }
+
+        @keyframes gooey-pill {
+          0% {
+            transform: scale(0.2);
+            opacity: 0.5;
+          }
+          55% {
+            transform: scale(1.05);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+
+        .gooey-particle {
+          position: absolute;
+          z-index: 4;
+          pointer-events: none;
+          border-radius: 50%;
+          background: var(--color-1);
+          opacity: 0;
+        }
+
+        @keyframes gooey-fly {
+          from {
+            opacity: 0.85;
+          }
+          to {
+            transform: translate(var(--x), var(--y));
+            opacity: 0;
+          }
+        }
+      `}</style>
+
+      <div
+        ref={containerRef}
+        className={`gooey-nav${isReady ? ' is-ready' : ''}${className ? ` ${className}` : ''}`}
+      >
+        <ul data-gooey="true" aria-label="Primary">
+          {items.map((item, index) => {
+            const isActive = index === currentIndex
+            return (
+              <li key={item.href} data-index={index} className={isActive ? 'is-active' : ''}>
+                <a
+                  href={item.href}
+                  aria-current={isActive ? 'true' : undefined}
+                  onClick={(event) => handleClick(event, item.href, index)}
+                  onKeyDown={(event) => handleKeyDown(event, item.href, index)}
+                >
+                  {item.label}
+                </a>
+              </li>
+            )
+          })}
+        </ul>
+        <span className="gooey-nav-effect" aria-hidden="true" />
+      </div>
+    </>
   )
 }

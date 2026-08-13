@@ -100,23 +100,31 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   const text = typeof children === 'string' ? children : '';
 
   return (
-    <Tag ref={ref} className={className}>
-      {text
-        ? text.split(/(\s+)/).map((word, index) =>
-            word.match(/^\s+$/) ? (
-              <React.Fragment key={index}>{word}</React.Fragment>
-            ) : (
-              <span
-                className="scroll-reveal-word"
-                key={index}
-                style={{ display: 'inline-block' }}
-              >
-                {word}
-              </span>
-            ),
-          )
-        : children}
-    </Tag>
+    <>
+      <style>{`
+        .scroll-reveal-word {
+          display: inline-block;
+        }
+      `}</style>
+
+      <Tag ref={ref} className={className}>
+        {text
+          ? text.split(/(\s+)/).map((word, index) =>
+              word.match(/^\s+$/) ? (
+                <React.Fragment key={index}>{word}</React.Fragment>
+              ) : (
+                <span
+                  className="scroll-reveal-word"
+                  key={index}
+                  style={{ display: 'inline-block' }}
+                >
+                  {word}
+                </span>
+              ),
+            )
+          : children}
+      </Tag>
+    </>
   );
 };
 

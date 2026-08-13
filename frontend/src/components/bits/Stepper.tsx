@@ -80,7 +80,133 @@ export default function Stepper({
   };
 
   return (
-    <div className="stepper" {...rest}>
+    <>
+      <style>{`
+        .stepper {
+          max-width: 560px;
+          margin: 0 auto;
+        }
+
+        .stepper-card {
+          padding: var(--space-6);
+          border-radius: var(--radius-lg);
+          background: var(--bg-surface);
+          box-shadow: var(--shadow-border);
+        }
+
+        .stepper-steps {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: var(--space-6);
+        }
+
+        .stepper-indicator {
+          position: relative;
+          z-index: 1;
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .stepper-indicator.is-disabled {
+          cursor: default;
+        }
+
+        .stepper-indicator-circle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          font-family: var(--font-mono);
+          font-size: var(--text-caption);
+          color: var(--text-on-accent);
+          box-shadow: 0 0 0 1px var(--border-strong);
+        }
+
+        .stepper-indicator-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--text-on-accent);
+        }
+
+        .stepper-indicator-num {
+          color: var(--text-muted);
+        }
+
+        .stepper-check {
+          width: 14px;
+          height: 14px;
+          color: var(--text-on-accent);
+        }
+
+        .stepper-connector {
+          flex: 1;
+          height: 2px;
+          margin: 0 10px;
+          border-radius: 999px;
+          background: var(--border);
+          overflow: hidden;
+        }
+
+        .stepper-connector-fill {
+          height: 100%;
+          border-radius: inherit;
+        }
+
+        .stepper-content {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .stepper-step-content {
+          padding: var(--space-4) 0;
+        }
+
+        .stepper-step-head {
+          display: flex;
+          align-items: baseline;
+          gap: var(--space-3);
+          margin-bottom: var(--space-3);
+        }
+
+        .stepper-step-mono {
+          font-family: var(--font-mono);
+          font-size: var(--text-micro);
+          letter-spacing: 0.06em;
+          color: var(--accent-text);
+        }
+
+        .stepper-step-title {
+          font-size: var(--text-h3);
+          font-weight: 600;
+          line-height: var(--leading-h3);
+          letter-spacing: var(--tracking-h3);
+          color: var(--text-primary);
+        }
+
+        .stepper-step-text {
+          font-size: var(--text-sm);
+          line-height: var(--leading-relaxed);
+          letter-spacing: var(--tracking-body);
+          color: var(--text-secondary);
+          text-wrap: pretty;
+        }
+
+        .stepper-footer {
+          margin-top: var(--space-4);
+        }
+
+        .stepper-footer-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: var(--space-3);
+        }
+      `}</style>
+
+      <div className="stepper" {...rest}>
       <div className={`stepper-card${stepCircleContainerClassName ? ` ${stepCircleContainerClassName}` : ''}`}>
         <div className={`stepper-steps${stepContainerClassName ? ` ${stepContainerClassName}` : ''}`}>
           {stepsArray.map((_, index) => {
@@ -147,6 +273,7 @@ export default function Stepper({
         )}
       </div>
     </div>
+    </>
   );
 }
 

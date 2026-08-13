@@ -61,15 +61,28 @@ const Noise: React.FC<NoiseProps> = ({
   }, [patternAlpha, prefersReducedMotion]);
 
   return (
-    <canvas
-      className="noise-canvas"
-      ref={grainRef}
-      aria-hidden="true"
-      style={{
-        imageRendering: 'pixelated',
-        transform: `scaleX(${patternScaleX}) scaleY(${patternScaleY})`,
-      }}
-    />
+    <>
+      <style>{`
+        .noise-canvas {
+          position: fixed;
+          inset: 0;
+          z-index: 40;
+          width: 100vw;
+          height: 100vh;
+          pointer-events: none;
+        }
+      `}</style>
+
+      <canvas
+        className="noise-canvas"
+        ref={grainRef}
+        aria-hidden="true"
+        style={{
+          imageRendering: 'pixelated',
+          transform: `scaleX(${patternScaleX}) scaleY(${patternScaleY})`,
+        }}
+      />
+    </>
   );
 };
 

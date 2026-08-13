@@ -176,26 +176,52 @@ const TextType = ({
   const shouldHideCursor =
     hideCursorWhileTyping && (currentCharIndex < textArray[currentTextIndex].length || isDeleting);
 
-  return createElement(
-    Component,
-    {
-      ref: containerRef,
-      className: `text-type${className ? ` ${className}` : ''}`,
-      ...props,
-    },
-    <span className="text-type-inner" style={{ color: getCurrentTextColor() || 'inherit' }}>
-      {displayedText}
-    </span>,
-    showCursor && (
-      <span
-        ref={cursorRef}
-        className={`text-type-cursor${shouldHideCursor ? ' is-hidden' : ''}${
-          cursorClassName ? ` ${cursorClassName}` : ''
-        }`}
-      >
-        {cursorCharacter}
-      </span>
-    ),
+  return (
+    <>
+      <style>{`
+        .text-type {
+          display: inline-flex;
+          align-items: center;
+        }
+
+        .text-type-inner {
+          display: inline-block;
+          white-space: pre;
+        }
+
+        .text-type-cursor {
+          display: inline-block;
+          margin-left: 2px;
+          font-weight: 300;
+        }
+
+        .text-type-cursor.is-hidden {
+          opacity: 0;
+        }
+      `}</style>
+
+      {createElement(
+        Component,
+        {
+          ref: containerRef,
+          className: `text-type${className ? ` ${className}` : ''}`,
+          ...props,
+        },
+        <span className="text-type-inner" style={{ color: getCurrentTextColor() || 'inherit' }}>
+          {displayedText}
+        </span>,
+        showCursor && (
+          <span
+            ref={cursorRef}
+            className={`text-type-cursor${shouldHideCursor ? ' is-hidden' : ''}${
+              cursorClassName ? ` ${cursorClassName}` : ''
+            }`}
+          >
+            {cursorCharacter}
+          </span>
+        ),
+      )}
+    </>
   );
 };
 

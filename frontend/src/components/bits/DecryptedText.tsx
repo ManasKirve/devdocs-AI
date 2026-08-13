@@ -356,12 +356,32 @@ export default function DecryptedText({
         : {};
 
   return (
-    <motion.span
-      ref={containerRef}
-      className={`decrypted-text${parentClassName ? ` ${parentClassName}` : ''}`}
-      {...animateProps}
-      {...props}
-    >
+    <>
+      <style>{`
+        .decrypted-text {
+          display: inline-block;
+          white-space: pre-wrap;
+        }
+
+        .decrypted-text .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          white-space: nowrap;
+          border: 0;
+        }
+      `}</style>
+
+      <motion.span
+        ref={containerRef}
+        className={`decrypted-text${parentClassName ? ` ${parentClassName}` : ''}`}
+        {...animateProps}
+        {...props}
+      >
       <span className="sr-only">{displayText}</span>
 
       <span aria-hidden="true">
@@ -376,5 +396,6 @@ export default function DecryptedText({
         })}
       </span>
     </motion.span>
+    </>
   );
 }

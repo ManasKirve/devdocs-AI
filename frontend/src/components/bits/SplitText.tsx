@@ -168,9 +168,31 @@ const SplitText: React.FC<SplitTextProps> = ({
     const Tag = (tag || 'p') as React.ElementType;
 
     return (
-      <Tag ref={ref} style={style} className={classes}>
-        {text}
-      </Tag>
+      <>
+        <style>{`
+          .split-parent {
+            overflow: hidden;
+          }
+
+          .split-word {
+            display: inline-block;
+            white-space: pre;
+          }
+
+          .split-line {
+            display: block;
+          }
+
+          .split-char {
+            display: inline-block;
+            will-change: transform, opacity;
+          }
+        `}</style>
+
+        <Tag ref={ref} style={style} className={classes}>
+          {text}
+        </Tag>
+      </>
     );
   };
   return renderTag();
