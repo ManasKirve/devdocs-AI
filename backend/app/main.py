@@ -16,9 +16,6 @@ app = FastAPI(title="DevDocs AI API", version=settings.api_version)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    # Allow the Vercel-hosted frontend (production and preview deployments)
-    # in addition to the configured origins (default: localhost dev).
-    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -23,7 +23,10 @@ class Settings(BaseSettings):
     github_token: str = ""
     github_api_url: str = "https://api.github.com"
     github_timeout_seconds: float = 20.0
-    cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
+    cors_origins: Annotated[list[str], NoDecode] = [
+        "http://localhost:5173",
+        "https://devdocs-ai-dun.vercel.app",
+    ]
     api_v1_prefix: str = "/api/v1"
     api_version: str = "0.1.0"
 
