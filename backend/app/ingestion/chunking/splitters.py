@@ -52,7 +52,7 @@ def logical_blocks(lines: list[str], language: str | None) -> list[tuple[int, in
     if lang in ("markdown", "mdx"):
         return _markdown_blocks(lines)
     if lang == "text":
-        return _paragraph_blocks(lines)
+        return paragraph_blocks(lines)
     if lang == "json":
         return _json_blocks(lines)
     if lang == "yaml":
