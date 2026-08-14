@@ -642,7 +642,7 @@ code {
   list-style: none;
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
 }
 
 .navbar-links {
@@ -655,25 +655,46 @@ code {
 }
 
 .navbar-link {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-sm);
   font-size: var(--text-sm);
   font-weight: 500;
+  letter-spacing: var(--tracking-label);
   color: var(--text-secondary);
-  transition:
-    color var(--duration-fast) var(--ease-default),
-    background-color var(--duration-fast) var(--ease-default);
+  white-space: nowrap;
+  transition: color var(--duration-base) var(--ease-default);
+}
+
+/* quiet accent underline — scales in from the left on hover/focus and stays
+   on the active section; the only hover affordance, so the bar reads clean */
+.navbar-link::after {
+  content: '';
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: 4px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent-text);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--duration-base) var(--ease-out);
 }
 
 .navbar-link:hover {
   color: var(--text-primary);
-  background-color: var(--bg-hover);
+}
+
+.navbar-link:hover::after,
+.navbar-link:focus-visible::after {
+  transform: scaleX(1);
 }
 
 .navbar-link:active {
-  background-color: var(--bg-active);
+  color: var(--text-primary);
 }
 
 .navbar-link.is-active,
@@ -682,12 +703,49 @@ code {
   font-weight: 600;
 }
 
+/* current section keeps its underline at rest */
+.navbar-link.is-active::after,
+.navbar-link[aria-current='true']::after {
+  transform: scaleX(1);
+}
+
 .navbar-actions {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+}
+
+/* navbar-scoped button polish — slightly larger hit targets, an outlined
+   ghost, and a quiet glow on the primary CTA; shared .btn styles untouched */
+.navbar .btn {
+  height: 34px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+}
+
+.navbar .btn-ghost {
+  background: transparent;
+  box-shadow: 0 0 0 1px var(--border);
+  color: var(--text-primary);
+}
+
+.navbar .btn-ghost:hover:not(:disabled) {
+  background: var(--bg-hover);
+  box-shadow: 0 0 0 1px var(--border-hover);
+}
+
+.navbar .btn-primary {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.14),
+    0 4px 12px -4px rgba(50, 145, 255, 0.4);
+}
+
+.navbar .btn-primary:hover:not(:disabled) {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.14),
+    0 6px 16px -6px rgba(50, 145, 255, 0.55);
 }
 
 /* repository context chip in nav — quiet engineering status: green dot +
@@ -733,7 +791,13 @@ code {
   box-shadow: var(--shadow-border-strong);
   border: none;
   border-radius: var(--radius-sm);
-  transition: transform 100ms ease-out;
+  transition:
+    transform 100ms ease-out,
+    background-color var(--duration-fast) var(--ease-default);
+}
+
+.navbar-toggle:hover {
+  background: var(--bg-hover);
 }
 
 .navbar-toggle:active {
@@ -3327,6 +3391,9 @@ code {
     margin: 0;
     padding: var(--space-3) var(--space-5) var(--space-5);
     background: var(--bg-elevated);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-top: 1px solid var(--border-faint);
     box-shadow: var(--shadow-lg);
     max-height: 100vh;
     max-height: 100dvh;
@@ -3347,12 +3414,27 @@ code {
   }
 
   .navbar-link {
-    padding: var(--space-3) 14px;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  /* underline stays aligned to the taller mobile hit target */
+  .navbar-links .navbar-link::after {
+    left: var(--space-4);
+    right: var(--space-4);
   }
 
   .navbar-links-github,
   .navbar-links-cta {
     display: block;
+  }
+
+  .navbar-links-github {
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-faint);
+  }
+
+  .navbar-links-cta {
     margin-top: var(--space-2);
   }
 
