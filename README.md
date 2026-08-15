@@ -29,15 +29,16 @@ Chunking ──────────► language-aware logical blocks, ~1200 
                      per chunk with ~150-token overlap
         │
         ▼
-Embedding ─────────► xAI text-embedding model, batched (16/request)
+Embedding ─────────► local ONNX model (FastEmbed,
+                     BAAI/bge-small-en-v1.5), batched (16/request)
         │
         ▼
 In-memory stores ──► documents, chunks, embeddings, and a vector
                      index (brute-force cosine similarity)
         │
         ▼
-Search / RAG ──────► embed query → top-k retrieval → optional
-                     Grok (xAI) generation grounded in the snippets
+Search / RAG ──────► embed query → top-k retrieval → Groq
+                     generation grounded in the snippets
 ```
 
 ## Tech stack
@@ -54,9 +55,9 @@ Search / RAG ──────► embed query → top-k retrieval → optional
 
 - Python 3, FastAPI, Uvicorn
 - Pydantic + Pydantic Settings for schemas and configuration
-- httpx for async HTTP clients (xAI + GitHub)
-- xAI Grok (`grok-4.5`) for LLM generation (chat completions)
-- xAI embeddings (`text-embedding-3-large`)
+- httpx for async HTTP clients (Groq + GitHub)
+- Groq (`llama-3.3-70b-versatile`) for LLM generation (chat completions)
+- Local embeddings via FastEmbed (ONNX Runtime) — `BAAI/bge-small-en-v1.5`
 - In-memory storage and vector index (no external database)
 
 ## Repository structure
@@ -71,8 +72,8 @@ backend/
       dependencies/         service construction per route
       errors.py             exception → HTTP response mapping
     ai/
-      llm/                  Grok (xAI) chat provider + output parsing
-      embeddings/           xAI embedding provider
+      llm/                  Groq chat provider + output parsing
+      embeddings/           local FastEmbed embedding provider
       rag/                  retrieval, cosine similarity, vector store, prompts
       prompts/              system prompts
     ingestion/
@@ -106,7 +107,7 @@ tests/                      placeholder (empty)
 
 - Node.js 18+ and npm (frontend)
 - Python 3.10+ (backend)
-- An [xAI API key](https://docs.x.ai/) (required for embedding, search, RAG, and AI endpoints)
+- A [Groq API key](https://console.groq.com/keys) (required for the AI and RAG endpoints; embeddings run locally and need no key)
 - A GitHub Personal Access Token (recommended to raise rate limits during ingestion)
 
 ## Environment variables
@@ -115,9 +116,10 @@ Copy `.env.example` to `.env` in the project root. Both processes read this sing
 
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |
-| `XAI_API_KEY` | Yes | — | xAI API key used by the LLM and embedding providers |
-| `XAI_MODEL` | No | `grok-4.5` | Model for the general `/ai/generate` endpoint |
-| `XAI_EMBEDDING_MODEL` | No | `text-embedding-3-large` | Model used to embed chunks and queries |
+| `GROQ_API_KEY` | Yes | — | Groq API key used by the LLM and RAG providers |
+| `GROQ_MODEL` | No | `llama-3.3-70b-versatile` | Model for the general `/ai/generate` endpoint |
+| `GROQ_RAG_MODEL` | No | `llama-3.3-70b-versatile` | Model used for grounded RAG answers |
+| `EMBEDDING_MODEL` | No | `BAAI/bge-small-en-v1.5` | Local embedding model (FastEmbed/ONNX); no API key needed |
 | `GITHUB_TOKEN` | No | — | GitHub token; raises the API rate limit during ingestion |
 | `CORS_ORIGINS` | No | `http://localhost:5173` | Comma-separated allowed origins |
 | `VITE_API_BASE_URL` | No | `http://localhost:8000` | Backend URL used by the frontend |
@@ -129,7 +131,7 @@ Copy `.env.example` to `.env` in the project root. Both processes read this sing
 git clone <repo-url>
 cd devdocs-AI
 cp .env.example .env
-# edit .env and set XAI_API_KEY (and GITHUB_TOKEN if you have one)
+# edit .env and set GROQ_API_KEY (and GITHUB_TOKEN if you have one)
 ```
 
 ### Backend
@@ -209,7 +211,7 @@ All endpoints are prefixed with `/api/v1` and documented interactively at `/docs
 
 ## AI / RAG architecture
 
-- **Providers** are abstract (`LLMProvider`, `EmbeddingProvider`) with the current xAI implementations (`GrokProvider`, `XAIEmbeddingProvider`) behind them.
+- **Providers** are abstract (`LLMProvider`, `EmbeddingProvider`) with a Groq implementation (`GroqProvider`) for generation and a local FastEmbed implementation (`LocalEmbeddingProvider`) behind them.
 - **Retrieval** embeds the query, then does brute-force cosine similarity against the in-memory vector store, isolating results per repository and returning the top-k hits.
 - **RAG prompt** instructs the model to answer strictly from the provided snippets, never to invent code, and to cite snippets as `file_path#start-end`. If no snippets are retrieved, the endpoint returns a `404`.
 - **Output extraction** strips explanatory text and returns the last fenced code block together with its language label (`text` when there is no fence).
@@ -221,11 +223,11 @@ All endpoints are prefixed with `/api/v1` and documented interactively at `/docs
 3. Fetch the recursive git tree (up to 5000 entries).
 4. Filter files by supported extension, ignored directories (`node_modules`, `.git`, `dist`, etc.), a 512 KB size cap, and a 100-file process cap.
 5. Fetch and decode each file's content from the GitHub contents API.
-6. Chunk each document, embed the chunks in batches, then persist documents, chunks, embeddings, and vectors to the in-memory stores.
+6. Chunk each document, embed the chunks in batches with a local ONNX model, then persist documents, chunks, embeddings, and vectors to the in-memory stores.
 
 ## Testing
 
-The backend has a pytest suite in `backend/tests/` covering chunking, GitHub URL parsing and ingestion, embedding batching, the Grok provider, retrieval/similarity, the RAG service, and the API endpoints (via FastAPI `TestClient` and mocked HTTP transports).
+The backend has a pytest suite in `backend/tests/` covering chunking, GitHub URL parsing and ingestion, embedding batching, the Groq provider, retrieval/similarity, the RAG service, and the API endpoints (via FastAPI `TestClient` and mocked HTTP transports).
 
 ```bash
 cd backend
@@ -253,9 +255,9 @@ The backend currently has no Docker or container deployment configuration — `d
 Implemented and working:
 
 - FastAPI backend with health, AI, repository ingestion, semantic search, and RAG endpoints
-- GitHub repository ingestion with filtering, language-aware chunking, and xAI embeddings
+- GitHub repository ingestion with filtering, language-aware chunking, and local embeddings
 - In-memory document store and vector index with brute-force cosine similarity
-- Grok-powered general chat and grounded RAG answers
+- Groq-powered general chat and grounded RAG answers
 - React + TypeScript frontend with repository analysis, search, and Q&A sections
 - Backend health polling and offline banner
 - Backend test suite (pytest)

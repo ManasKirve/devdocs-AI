@@ -1,7 +1,7 @@
 import logging
 
+from app.ai.embeddings.local import LocalEmbeddingProvider
 from app.ai.embeddings.models import EmbeddingResult
-from app.ai.embeddings.xai import XAIEmbeddingProvider
 from app.ai.rag.models import VectorStoreItem
 from app.ai.rag.store import InMemoryVectorStore, vector_store as default_vector_store
 from app.core.config import get_settings
@@ -26,12 +26,7 @@ logger = logging.getLogger("devdocs_ai")
 
 def _default_embedder() -> EmbeddingService:
     settings = get_settings()
-    provider = XAIEmbeddingProvider(
-        api_key=settings.xai_api_key,
-        model=settings.xai_embedding_model,
-        base_url=settings.xai_base_url,
-        timeout_seconds=settings.xai_timeout_seconds,
-    )
+    provider = LocalEmbeddingProvider(model=settings.embedding_model)
     return EmbeddingService(provider=provider)
 
 

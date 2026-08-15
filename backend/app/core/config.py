@@ -14,12 +14,12 @@ class Settings(BaseSettings):
         env_file=PROJECT_ROOT / ".env", env_file_encoding="utf-8", extra="ignore"
     )
 
-    xai_api_key: str = ""
-    xai_model: str = "grok-4.5"
-    xai_rag_model: str = "grok-4.5"
-    xai_embedding_model: str = "text-embedding-3-large"
-    xai_base_url: str = "https://api.x.ai/v1"
-    xai_timeout_seconds: float = 60.0
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
+    groq_rag_model: str = "llama-3.3-70b-versatile"
+    groq_base_url: str = "https://api.groq.com/openai/v1"
+    groq_timeout_seconds: float = 60.0
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
     github_token: str = ""
     github_api_url: str = "https://api.github.com"
     github_timeout_seconds: float = 20.0

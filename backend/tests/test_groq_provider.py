@@ -10,7 +10,7 @@ from app.ai.llm.errors import (
     LLMProviderRequestError,
     LLMProviderResponseError,
 )
-from app.ai.llm.grok import GrokProvider
+from app.ai.llm.groq import GroqProvider
 
 
 def _run(coro):
@@ -18,20 +18,22 @@ def _run(coro):
 
 
 def _provider(handler, api_key="test-api-key"):
-    return GrokProvider(
+    return GroqProvider(
         api_key=api_key,
-        model="grok-4.5",
-        base_url="https://api.x.ai/v1",
+        model="llama-3.3-70b-versatile",
+        base_url="https://api.groq.com/openai/v1",
         transport=httpx.MockTransport(handler),
     )
 
 
 def test_generate_response_returns_normalized_result():
     def handler(request: httpx.Request) -> httpx.Response:
-        assert str(request.url) == "https://api.x.ai/v1/chat/completions"
+        assert (
+            str(request.url) == "https://api.groq.com/openai/v1/chat/completions"
+        )
         assert request.headers["Authorization"] == "Bearer test-api-key"
         payload = json.loads(request.content)
-        assert payload["model"] == "grok-4.5"
+        assert payload["model"] == "llama-3.3-70b-versatile"
         assert payload["messages"][0] == {"role": "system", "content": "Be helpful"}
         assert payload["messages"][1] == {"role": "user", "content": "Hello"}
         assert payload["temperature"] == 0.2
@@ -40,7 +42,7 @@ def test_generate_response_returns_normalized_result():
             200,
             json={
                 "id": "chatcmpl-test",
-                "model": "grok-4.5",
+                "model": "llama-3.3-70b-versatile",
                 "choices": [
                     {"index": 0, "message": {"role": "assistant", "content": "Hi there"}}
                 ],
@@ -57,8 +59,8 @@ def test_generate_response_returns_normalized_result():
         )
     )
     assert result.content == "Hi there"
-    assert result.model == "grok-4.5"
-    assert result.provider == "grok"
+    assert result.model == "llama-3.3-70b-versatile"
+    assert result.provider == "groq"
 
 
 def test_max_tokens_omitted_when_not_provided():
@@ -68,7 +70,7 @@ def test_max_tokens_omitted_when_not_provided():
         return httpx.Response(
             200,
             json={
-                "model": "grok-4.5",
+                "model": "llama-3.3-70b-versatile",
                 "choices": [
                     {"index": 0, "message": {"role": "assistant", "content": "ok"}}
                 ],
@@ -82,7 +84,7 @@ def test_max_tokens_omitted_when_not_provided():
 
 def test_missing_api_key_raises_configuration_error():
     with pytest.raises(LLMProviderConfigurationError):
-        GrokProvider(api_key="", model="grok-4.5")
+        GroqProvider(api_key="", model="llama-3.3-70b-versatile")
 
 
 def test_invalid_api_key_raises_authentication_error():

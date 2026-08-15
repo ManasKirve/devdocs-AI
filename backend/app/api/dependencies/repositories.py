@@ -1,4 +1,4 @@
-from app.ai.embeddings.xai import XAIEmbeddingProvider
+from app.ai.embeddings.local import LocalEmbeddingProvider
 from app.core.config import get_settings
 from app.ingestion.chunking.service import ChunkingService
 from app.ingestion.github import GitHubClient
@@ -13,12 +13,7 @@ def get_repository_service() -> RepositoryIngestionService:
         base_url=settings.github_api_url,
         timeout_seconds=settings.github_timeout_seconds,
     )
-    provider = XAIEmbeddingProvider(
-        api_key=settings.xai_api_key,
-        model=settings.xai_embedding_model,
-        base_url=settings.xai_base_url,
-        timeout_seconds=settings.xai_timeout_seconds,
-    )
+    provider = LocalEmbeddingProvider(model=settings.embedding_model)
     return RepositoryIngestionService(
         github=client,
         chunker=ChunkingService(),

@@ -1,15 +1,14 @@
 import asyncio
-import json
 
-import httpx
 import pytest
 
+from app.ai.embeddings import local as local_module
 from app.ai.embeddings.errors import (
     EmbeddingConfigurationError,
     EmbeddingRequestError,
     EmbeddingResponseError,
 )
-from app.ai.embeddings.xai import XAIEmbeddingProvider
+from app.ai.embeddings.local import DEFAULT_DIMENSION, DEFAULT_MODEL, LocalEmbeddingProvider
 from app.ingestion.chunking.models import Chunk
 from app.services.embedding_service import EmbeddingService
 
@@ -36,55 +35,41 @@ def _chunk(
     )
 
 
-def _provider(handler, api_key="test-api-key", model="text-embedding-3-large"):
-    return XAIEmbeddingProvider(
-        api_key=api_key,
-        model=model,
-        base_url="https://api.x.ai/v1",
-        transport=httpx.MockTransport(handler),
+class FakeModel:
+    def __init__(self, vector_factory=None):
+        self._vector_factory = vector_factory or (lambda i, text: [1.0, 2.0])
+        self.calls = []
+
+    def embed(self, texts):
+        self.calls.append(list(texts))
+        return [
+            [float(value) for value in self._vector_factory(i, text)]
+            for i, text in enumerate(texts)
+        ]
+
+
+def _provider_with_fake_model(monkeypatch, model=None):
+    fake_model = model or FakeModel()
+    monkeypatch.setattr(local_module, "_load_model", lambda name: fake_model)
+    return fake_model, LocalEmbeddingProvider(model=DEFAULT_MODEL)
+
+
+def test_successful_embedding_generation(monkeypatch):
+    fake_model, provider = _provider_with_fake_model(
+        monkeypatch, FakeModel(lambda i, text: [0.1, 0.2])
     )
-
-
-def test_successful_embedding_generation():
-    def handler(request: httpx.Request) -> httpx.Response:
-        assert str(request.url) == "https://api.x.ai/v1/embeddings"
-        assert request.headers["Authorization"] == "Bearer test-api-key"
-        payload = json.loads(request.content)
-        assert payload["model"] == "text-embedding-3-large"
-        assert payload["input"] == ["hello world"]
-        return httpx.Response(
-            200,
-            json={
-                "object": "list",
-                "model": "text-embedding-3-large",
-                "data": [
-                    {"object": "embedding", "index": 0, "embedding": [0.1, 0.2]}
-                ],
-                "usage": {"prompt_tokens": 2, "total_tokens": 2},
-            },
-        )
-
-    provider = _provider(handler)
     service = EmbeddingService(provider=provider, batch_size=10)
     results = _run(service.embed_chunks([_chunk("hello world")]))
     assert len(results) == 1
     assert results[0].content == "hello world"
     assert results[0].embedding == [0.1, 0.2]
+    assert fake_model.calls == [["hello world"]]
 
 
-def test_multiple_chunks_produce_multiple_results():
-    def handler(request: httpx.Request) -> httpx.Response:
-        texts = json.loads(request.content)["input"]
-        return httpx.Response(
-            200,
-            json={
-                "data": [
-                    {"embedding": [float(i), 0.0]} for i in range(len(texts))
-                ]
-            },
-        )
-
-    provider = _provider(handler)
+def test_multiple_chunks_produce_multiple_results(monkeypatch):
+    fake_model, provider = _provider_with_fake_model(
+        monkeypatch, FakeModel(lambda i, text: [float(i), 0.0])
+    )
     service = EmbeddingService(provider=provider, batch_size=10)
     chunks = [_chunk(f"text {i}", index=i) for i in range(5)]
     results = _run(service.embed_chunks(chunks))
@@ -93,75 +78,85 @@ def test_multiple_chunks_produce_multiple_results():
     assert [r.content for r in results] == [f"text {i}" for i in range(5)]
 
 
-def test_empty_chunk_list_makes_no_api_call():
+def test_empty_chunk_list_makes_no_model_call(monkeypatch):
     called = False
 
-    def handler(request: httpx.Request) -> httpx.Response:
+    def fail_if_called(name):
         nonlocal called
         called = True
-        return httpx.Response(500, json={})
+        raise AssertionError("model should not be loaded for an empty batch")
 
-    provider = _provider(handler)
+    monkeypatch.setattr(local_module, "_load_model", fail_if_called)
+    provider = LocalEmbeddingProvider(model=DEFAULT_MODEL)
     service = EmbeddingService(provider=provider)
-    results = _run(service.embed_chunks([]))
-    assert results == []
+    assert _run(service.embed_chunks([])) == []
     assert called is False
 
 
-def test_batch_processing_splits_requests():
-    request_inputs = []
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        texts = json.loads(request.content)["input"]
-        request_inputs.append(texts)
-        return httpx.Response(
-            200,
-            json={
-                "data": [
-                    {"embedding": [float(i), 0.0, 0.0]}
-                    for i in range(len(texts))
-                ]
-            },
-        )
-
-    provider = _provider(handler)
+def test_batch_processing_splits_requests(monkeypatch):
+    fake_model, provider = _provider_with_fake_model(
+        monkeypatch, FakeModel(lambda i, text: [float(i), 0.0, 0.0])
+    )
     service = EmbeddingService(provider=provider, batch_size=2)
     chunks = [_chunk(f"text {i}", index=i) for i in range(5)]
     results = _run(service.embed_chunks(chunks))
     assert len(results) == 5
-    assert request_inputs == [["text 0", "text 1"], ["text 2", "text 3"], ["text 4"]]
+    assert fake_model.calls == [
+        ["text 0", "text 1"],
+        ["text 2", "text 3"],
+        ["text 4"],
+    ]
 
 
-def test_provider_api_failure_raises_request_error():
-    def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(500, json={"error": "internal error"})
-
-    provider = _provider(handler)
-    service = EmbeddingService(provider=provider)
-    with pytest.raises(EmbeddingRequestError):
-        _run(service.embed_chunks([_chunk("text")]))
-
-
-def test_missing_api_key_raises_configuration_error():
+def test_missing_model_raises_configuration_error():
     with pytest.raises(EmbeddingConfigurationError):
-        XAIEmbeddingProvider(api_key="", model="text-embedding-3-large")
+        LocalEmbeddingProvider(model="")
 
 
-def test_invalid_provider_response_raises_response_error():
-    def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, json={"data": [{"embedding": "not-a-list"}]})
+def test_model_load_failure_raises_configuration_error(monkeypatch):
+    def boom(name):
+        raise RuntimeError("download failed")
 
-    provider = _provider(handler)
-    service = EmbeddingService(provider=provider)
+    monkeypatch.setattr(local_module, "_load_model", boom)
+    provider = LocalEmbeddingProvider(model=DEFAULT_MODEL)
+    with pytest.raises(EmbeddingConfigurationError):
+        _run(provider.embed_texts(["text"]))
+
+
+def test_inference_failure_raises_request_error(monkeypatch):
+    class ExplodingModel:
+        def embed(self, texts):
+            raise RuntimeError("inference failed")
+
+    _, provider = _provider_with_fake_model(monkeypatch, ExplodingModel())
+    with pytest.raises(EmbeddingRequestError):
+        _run(provider.embed_texts(["text"]))
+
+
+def test_mismatched_result_count_raises_response_error(monkeypatch):
+    class ShortModel:
+        def embed(self, texts):
+            return [[1.0]]
+
+    _, provider = _provider_with_fake_model(monkeypatch, ShortModel())
     with pytest.raises(EmbeddingResponseError):
-        _run(service.embed_chunks([_chunk("text")]))
+        _run(provider.embed_texts(["a", "b"]))
 
 
-def test_embedding_metadata_is_preserved():
-    def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, json={"data": [{"embedding": [1.0]}]})
+def test_empty_vector_raises_response_error(monkeypatch):
+    class EmptyModel:
+        def embed(self, texts):
+            return [[] for _ in texts]
 
-    provider = _provider(handler)
+    _, provider = _provider_with_fake_model(monkeypatch, EmptyModel())
+    with pytest.raises(EmbeddingResponseError):
+        _run(provider.embed_texts(["text"]))
+
+
+def test_embedding_metadata_is_preserved(monkeypatch):
+    _, provider = _provider_with_fake_model(
+        monkeypatch, FakeModel(lambda i, text: [1.0])
+    )
     service = EmbeddingService(provider=provider)
     chunk = Chunk(
         repository="acme/widgets",
@@ -185,17 +180,17 @@ def test_embedding_metadata_is_preserved():
     assert result.embedding == [1.0]
 
 
-def test_embedding_dimensions_are_consistent():
-    def handler(request: httpx.Request) -> httpx.Response:
-        texts = json.loads(request.content)["input"]
-        return httpx.Response(
-            200,
-            json={"data": [{"embedding": [0.5] * 8} for _ in texts]},
-        )
-
-    provider = _provider(handler)
+def test_embedding_dimensions_are_consistent(monkeypatch):
+    _, provider = _provider_with_fake_model(
+        monkeypatch, FakeModel(lambda i, text: [0.5] * 8)
+    )
     service = EmbeddingService(provider=provider, batch_size=2)
     chunks = [_chunk(f"text {i}", index=i) for i in range(6)]
     results = _run(service.embed_chunks(chunks))
     assert len(results) == 6
     assert {len(result.embedding) for result in results} == {8}
+
+
+def test_default_model_configuration_is_consistent():
+    assert DEFAULT_DIMENSION == 384
+    assert LocalEmbeddingProvider(model=DEFAULT_MODEL).model == DEFAULT_MODEL

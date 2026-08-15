@@ -11,10 +11,10 @@ from app.ai.llm.errors import (
     LLMProviderTimeoutError,
 )
 
-DEFAULT_BASE_URL = "https://api.x.ai/v1"
+DEFAULT_BASE_URL = "https://api.groq.com/openai/v1"
 
 
-class GrokProvider(LLMProvider):
+class GroqProvider(LLMProvider):
     def __init__(
         self,
         *,
@@ -25,7 +25,7 @@ class GrokProvider(LLMProvider):
         transport: Optional[httpx.AsyncBaseTransport] = None,
     ) -> None:
         if not api_key:
-            raise LLMProviderConfigurationError("XAI_API_KEY is not configured")
+            raise LLMProviderConfigurationError("GROQ_API_KEY is not configured")
         self._api_key = api_key
         self._model = model
         self._base_url = base_url.rstrip("/")
@@ -66,17 +66,17 @@ class GrokProvider(LLMProvider):
                     json=payload,
                 )
         except httpx.TimeoutException as exc:
-            raise LLMProviderTimeoutError("The xAI request timed out") from exc
+            raise LLMProviderTimeoutError("The Groq request timed out") from exc
         except httpx.HTTPError as exc:
-            raise LLMProviderRequestError("The xAI request failed") from exc
+            raise LLMProviderRequestError("The Groq request failed") from exc
 
         if response.status_code in (401, 403):
             raise LLMProviderAuthenticationError(
-                "The xAI API rejected the provided credentials"
+                "The Groq API rejected the provided credentials"
             )
         if response.status_code >= 400:
             raise LLMProviderRequestError(
-                f"The xAI API returned an error status {response.status_code}"
+                f"The Groq API returned an error status {response.status_code}"
             )
 
         return self._parse_response(response)
@@ -88,14 +88,14 @@ class GrokProvider(LLMProvider):
             content = data["choices"][0]["message"].get("content")
         except (ValueError, KeyError, IndexError, TypeError) as exc:
             raise LLMProviderResponseError(
-                "The xAI API returned an unexpected response"
+                "The Groq API returned an unexpected response"
             ) from exc
         if not isinstance(content, str):
             raise LLMProviderResponseError(
-                "The xAI API returned an unexpected response"
+                "The Groq API returned an unexpected response"
             )
         return LLMResponse(
             content=content,
             model=str(data.get("model") or ""),
-            provider="grok",
+            provider="groq",
         )
